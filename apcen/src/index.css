@@ -18,16 +18,15 @@
   font-display: swap;
 }
 
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* --- App Palette --- */
-  --color-brand-cream: #f9f3ea;
-  --color-brand-blue-deep: #2a59a9;
-  --color-brand-blue-solid: #9fc1fe;
-  --color-brand-blue-mid: rgba(159, 193, 254, 0.6);
-  --color-brand-blue-soft: rgba(159, 193, 254, 0.3);
-
   /* --- App Fonts --- */
   --font-sans: "Clother", sans-serif;
   --font-heading: "Gunter", sans-serif;
