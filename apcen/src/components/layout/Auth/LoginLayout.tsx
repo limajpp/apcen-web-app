@@ -1,6 +1,7 @@
 import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
 import Header from "../../Header";
 import LoginForm from "@/components/Auth/LoginForm";
+import SupportArt from "@/components/SupportArt";
 
 export default function AuthLayout() {
   return (
@@ -13,8 +14,8 @@ export default function AuthLayout() {
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
-      <ResizablePanel className="bg-[#9FC1FE]" defaultSize="25%">
-        In Progress...
+      <ResizablePanel className="bg-transparent" defaultSize="25%">
+        <SupportArt />
       </ResizablePanel>
     </ResizablePanelGroup>
   );
