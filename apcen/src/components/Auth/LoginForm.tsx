@@ -1,17 +1,10 @@
 import { Card } from "../ui/card";
 
 import headerIcon from "@/assets/HeaderIcon.svg";
-import { useState } from "react";
 import LoginHeader from "./LoginHeader";
 import LoginContent from "./LoginContent";
 
 export default function LoginForm() {
-  const [togglePassword, setTogglePassword] = useState<boolean>(false);
-  const [userCredentials, setUserCredentials] = useState<{
-    name: string;
-    password: string;
-  }>({ name: "", password: "" });
-
   return (
     <Card className="bg-transparent ring-0 shadow-none flex flex-col m-auto w-md gap-8">
       <LoginHeader
@@ -29,10 +22,6 @@ export default function LoginForm() {
       <LoginContent
         onSubmit={(event) => event.preventDefault()}
         className="flex flex-col gap-10"
-        userCredentials={userCredentials}
-        setUserCredentials={setUserCredentials}
-        togglePassword={togglePassword}
-        setTogglePassword={setTogglePassword}
       />
     </Card>
   );

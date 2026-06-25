@@ -3,30 +3,21 @@ import { Button } from "../ui/button";
 import { CardContent, CardFooter } from "../ui/card";
 import { FieldGroup, Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
-import type { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import useAuth from "@/hooks/useAuth";
 
 interface LoginContentProps {
   onSubmit: (event: { preventDefault: () => any }) => any;
   className: string;
-  userCredentials: { name: string; password: string };
-  setUserCredentials: Dispatch<
-    SetStateAction<{
-      name: string;
-      password: string;
-    }>
-  >;
-  togglePassword: boolean;
-  setTogglePassword: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function LoginContent({
   onSubmit,
   className,
-  userCredentials,
-  setUserCredentials,
-  togglePassword,
-  setTogglePassword,
 }: LoginContentProps) {
+  const { userCredentials, setUserCredentials } = useAuth();
+  const [togglePassword, setTogglePassword] = useState<boolean>(false);
+
   const isLoginDisabled =
     userCredentials.name.trim() === "" ||
     userCredentials.password.trim() === "";
