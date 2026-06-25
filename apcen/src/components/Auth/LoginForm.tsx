@@ -3,6 +3,7 @@ import headerIcon from "@/assets/HeaderIcon.svg";
 import LoginContent from "./LoginContent";
 import useAuth from "@/hooks/useAuth";
 import { api } from "@/services/api";
+import axios from "axios";
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -18,7 +19,13 @@ export default function LoginForm() {
       });
       await login(response.data.accessToken, response.data.refreshToken);
     } catch (error) {
-      console.error("Error while logging in:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.status === 401) {
+          console.error("Your credentials are invalid. Please try again...");
+        } else {
+          console.error("Error while logging in:", error);
+        }
+      }
     }
   };
 

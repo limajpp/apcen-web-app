@@ -39,6 +39,9 @@ export default function LoginContent({
             </FieldLabel>
             <Input
               required
+              pattern="^[a-zA-Z0-9]+(?:[._\-][a-zA-Z0-9]+)*$"
+              minLength={3}
+              maxLength={32}
               value={userCredentials.name}
               onChange={(event) =>
                 setUserCredentials((prev) => ({
