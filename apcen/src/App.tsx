@@ -1,12 +1,11 @@
-import Login from "./pages/Login";
+import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./store/auth";
+import { router } from "@/routes/router";
 
-function App() {
+export default function App() {
   return (
     <AuthProvider>
-      <Login />
+      <RouterProvider router={router} />
     </AuthProvider>
   );
 }
-
-export default App;
