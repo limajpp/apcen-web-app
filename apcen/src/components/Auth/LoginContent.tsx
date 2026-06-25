@@ -4,26 +4,33 @@ import { CardContent, CardFooter } from "../ui/card";
 import { FieldGroup, Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { useState } from "react";
-import useAuth from "@/hooks/useAuth";
 
 interface LoginContentProps {
-  onSubmit: (event: { preventDefault: () => any }) => any;
-  className: string;
+  onSubmit: (credentials: { name: string; password: string }) => void;
+  className?: string;
 }
 
 export default function LoginContent({
   onSubmit,
   className,
 }: LoginContentProps) {
-  const { userCredentials, setUserCredentials } = useAuth();
+  const [userCredentials, setUserCredentials] = useState({
+    name: "",
+    password: "",
+  });
   const [togglePassword, setTogglePassword] = useState<boolean>(false);
 
   const isLoginDisabled =
     userCredentials.name.trim() === "" ||
     userCredentials.password.trim() === "";
 
+  const handleSubmit = (e: React.SubmitEvent) => {
+    e.preventDefault();
+    onSubmit(userCredentials);
+  };
+
   return (
-    <form onSubmit={onSubmit} className={className}>
+    <form onSubmit={handleSubmit} className={className}>
       <CardContent>
         <FieldGroup>
           <Field className="gap-2">
@@ -32,6 +39,7 @@ export default function LoginContent({
             </FieldLabel>
             <Input
               required
+              value={userCredentials.name}
               onChange={(event) =>
                 setUserCredentials((prev) => ({
                   ...prev,
@@ -41,6 +49,7 @@ export default function LoginContent({
               className="border border-solid px-3 h-10 focus-visible:ring-0 focus-visible:border-[#2A59A9] text-[#2A59A9] text-[16px] bg-[rgba(159,193,254,0.30)] border-[rgba(159,193,254,0.60)] rounded-[16px]"
             />
           </Field>
+
           <Field className="gap-2">
             <FieldLabel className="font-clother text-[#2A59A9] text-[18px]">
               Senha de acesso:
@@ -50,6 +59,7 @@ export default function LoginContent({
                 required
                 minLength={8}
                 maxLength={32}
+                value={userCredentials.password}
                 onChange={(event) =>
                   setUserCredentials((prev) => ({
                     ...prev,
