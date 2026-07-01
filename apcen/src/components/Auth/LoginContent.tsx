@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { CardContent, CardFooter } from "../ui/card";
 import { FieldGroup, Field, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 interface LoginContentProps {
   onSubmit: (credentials: { name: string; password: string }) => void;
@@ -24,7 +24,7 @@ export default function LoginContent({
     userCredentials.name.trim() === "" ||
     userCredentials.password.trim() === "";
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(userCredentials);
   };
