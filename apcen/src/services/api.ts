@@ -1,11 +1,15 @@
 import axios, { type AxiosInstance } from "axios";
 
-export const API_URL = import.meta.env.VITE_API_URL;
+const RAW_API_URL = import.meta.env.VITE_API_URL;
 
-if (!API_URL)
+if (!RAW_API_URL)
   throw new Error(
     "API_URL was not found. Please check your environment variables!",
   );
+
+export const API_URL = RAW_API_URL.endsWith("/")
+  ? RAW_API_URL
+  : `${RAW_API_URL}/`;
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -71,9 +75,12 @@ api.interceptors.response.use(
 
         if (!storedRefreshToken) throw new Error("No refresh token saved.");
 
-        const response = await axios.post(`${API_URL}auth/refresh`, {
-          refreshToken: storedRefreshToken,
-        });
+        const refreshUrl = new URL("auth/refresh", API_URL).toString();
+        const response = await axios.post(
+          refreshUrl,
+          { refreshToken: storedRefreshToken },
+          { timeout: 10000 },
+        );
 
         const { accessToken, refreshToken } = response.data;
 
