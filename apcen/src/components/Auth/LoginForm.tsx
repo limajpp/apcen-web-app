@@ -20,10 +20,13 @@ export default function LoginForm() {
       await login(response.data.accessToken, response.data.refreshToken);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.status === 401) {
-          console.error("Your credentials are invalid. Please try again...");
+        if (error.response?.status === 401) {
+          console.error("Login failed: invalid credentials.");
         } else {
-          console.error("Error while logging in:", error);
+          console.error("Login request failed, please try again later...", {
+            status: error.response?.status,
+            code: error.code,
+          });
         }
       }
     }
