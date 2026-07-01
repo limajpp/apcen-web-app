@@ -45,8 +45,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("@App:token", accessToken);
     localStorage.setItem("@App:refreshToken", refreshToken);
 
-    const response = await api.get("/user/me");
-    setUser(response.data);
+    try {
+      const response = await api.get("/user/me");
+      setUser(response.data);
+    } catch (error) {
+      localStorage.removeItem("@App:token");
+      localStorage.removeItem("@App:refreshToken");
+      throw error;
+    }
   };
 
   const logout = () => {
