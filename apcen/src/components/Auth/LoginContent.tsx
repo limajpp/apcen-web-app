@@ -35,7 +35,7 @@ export default function LoginContent({
         <FieldGroup>
           <Field className="gap-2">
             <FieldLabel className="font-clother text-[#2A59A9] text-[18px]">
-              Nome:
+              Nome de usuário:
             </FieldLabel>
             <Input
               required
