@@ -1,5 +1,5 @@
 import LoginForm from "@/components/Auth/LoginForm";
-import BaseLayout from "../Baselayout";
+import BaseLayout from "../BaseLayout";
 
 export default function AuthLayout() {
   return (
