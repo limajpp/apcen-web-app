@@ -1,5 +1,5 @@
 import { Card } from "../ui/card";
-import Slide from "../layout/Slide/Slide";
+import Slide from "./Slide";
 import SlideHeader from "./SlideHeader";
 
 export default function SlideContent() {
