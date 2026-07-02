@@ -1,9 +1,10 @@
-import { Card, CardHeader, CardTitle } from "../ui/card";
+import { Card } from "../ui/card";
 import headerIcon from "@/assets/HeaderIcon.svg";
 import LoginContent from "./LoginContent";
 import useAuth from "@/hooks/useAuth";
 import { api } from "@/services/api";
 import axios from "axios";
+import LoginHeader from "./LoginHeader";
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -34,7 +35,10 @@ export default function LoginForm() {
 
   return (
     <Card className="bg-transparent ring-0 flex flex-col m-auto w-md gap-8 border-none shadow-none">
-      <CardHeader className="flex flex-col justify-center items-center">
+      <LoginHeader
+        headerText="Bem-vindo de volta!"
+        className="flex flex-col justify-center items-center"
+      >
         <div className="flex items-center justify-center h-28 w-28 bg-[rgba(159,193,254,0.60)] rounded-full mb-4">
           <img
             className="w-19 h-19"
@@ -42,10 +46,7 @@ export default function LoginForm() {
             alt="Logotipo do APCEN com símbolo de microrganismo estilizado."
           />
         </div>
-        <CardTitle className="font-clother text-[#2A59A9] text-[32px] font-bold">
-          Bem-vindo de volta!
-        </CardTitle>
-      </CardHeader>
+      </LoginHeader>
       <LoginContent
         onSubmit={handleLoginSubmit}
         className="flex flex-col gap-10"
