@@ -2,6 +2,7 @@ import ProgressBar from "../ProgressBar";
 import { Card } from "../ui/card";
 import Slide from "./Slide";
 import SlideHeader from "./SlideHeader";
+import SlideLabeling from "./SlideLabeling";
 
 export default function SlideContent() {
   return (
@@ -13,6 +14,7 @@ export default function SlideContent() {
         imageUrl="/images/dummySlide.png"
       />
       <ProgressBar className="flex-1 h-4 rounded-[32px] bg-[#A9C2E8]" />
+      <SlideLabeling />
     </Card>
   );
 }
