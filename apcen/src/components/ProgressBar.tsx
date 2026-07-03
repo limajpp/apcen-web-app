@@ -12,7 +12,7 @@ export default function ProgressBar({ className }: ProgressBarProps) {
     if (value >= 100) return;
 
     const interval = setInterval(() => {
-      setValue((prev) => prev + 1);
+      setValue((prev) => prev + 10);
     }, 1000);
 
     return () => clearInterval(interval);
@@ -24,9 +24,11 @@ export default function ProgressBar({ className }: ProgressBarProps) {
         value={value}
         max={100}
         className={className}
-        indicatorClassName="bg-[#9FC1FE]"
+        indicatorClassName="bg-[#2A59A9]"
       />
-      <span className="text-[#2A59A9] font-clother text-[16px]">{value}%</span>
+      <span className="min-w-[4ch] text-right text-[#2A59A9] font-clother text-[16px]">
+        {value}%
+      </span>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default function SlideContent() {
         className="relative w-lg h-98 rounded-[16px] overflow-hidden"
         imageUrl="/images/dummySlide.png"
       />
-      <ProgressBar className="w-full h-4 rounded-[32px] bg-[#2A59A9]" />
+      <ProgressBar className="flex-1 h-4 rounded-[32px] bg-[#A9C2E8]" />
     </Card>
   );
 }
