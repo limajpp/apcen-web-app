@@ -1,3 +1,4 @@
+import ProgressBar from "../ProgressBar";
 import { Card } from "../ui/card";
 import Slide from "./Slide";
 import SlideHeader from "./SlideHeader";
@@ -11,6 +12,7 @@ export default function SlideContent() {
         className="relative w-lg h-98 rounded-[16px] overflow-hidden"
         imageUrl="/images/dummySlide.png"
       />
+      <ProgressBar className="w-full h-4 rounded-[32px] bg-[#2A59A9]" />
     </Card>
   );
 }
