@@ -6,6 +6,7 @@ interface SlideOptionRadioProps {
   value: string;
   letter: string;
   label: string;
+  onClick?: () => void;
 }
 
 export function SlideOptionRadio({
@@ -13,6 +14,7 @@ export function SlideOptionRadio({
   value,
   letter,
   label,
+  onClick,
 }: SlideOptionRadioProps) {
   return (
     <Label
@@ -22,6 +24,7 @@ export function SlideOptionRadio({
       <RadioGroupItem
         value={value}
         id={id}
+        onClick={onClick}
         className="w-6 h-6 shrink-0 flex items-center justify-center border-2 border-solid rounded-full border-[#F9F3EA]! bg-transparent! [&_[data-slot=radio-group-indicator]>span]:w-3 [&_[data-slot=radio-group-indicator]>span]:h-3 [&_[data-slot=radio-group-indicator]>span]:bg-[#F9F3EA]"
       />
       <div className="flex items-center gap-2 text-[#FFFFFF] font-clother">
