@@ -1,10 +1,9 @@
 import ProgressBar from "../ProgressBar";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
 import Slide from "./Slide";
 import SlideHeader from "./SlideHeader";
 import SlideLabeling from "./SlideLabeling";
-import { ChevronRight } from "lucide-react";
+import SlideConfirmationDialog from "./SlideConfirmationDialog";
+import { Card } from "../ui/card";
 
 export default function SlideContent() {
   return (
@@ -17,12 +16,11 @@ export default function SlideContent() {
         imageUrl="/images/dummySlide.png"
       />
       <SlideLabeling />
-      <Button
-        size="icon"
-        className="ml-auto flex items-center justify-center mt-4 p-4 h-8 w-8 rounded-full bg-[#2A59A9] hover:bg-[#2A59A9] cursor-pointer shrink-0"
-      >
-        <ChevronRight className="text-[#F9F3EA]" />
-      </Button>
+      <SlideConfirmationDialog
+        confirmationText="Deseja concluir o questionário?"
+        cancelButtonText="Cancelar"
+        actionButtonText="Finalizar"
+      />
     </Card>
   );
 }
