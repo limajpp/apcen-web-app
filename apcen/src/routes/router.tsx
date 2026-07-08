@@ -6,18 +6,19 @@ import SlideAnalysis from "@/pages/SlideAnalysis";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/slide-analysis" replace />,
+    element: <Navigate to="/login" replace />,
   },
   {
     path: "/login",
     element: <Login />,
   },
   {
-    path: "slide-analysis",
-    element: <SlideAnalysis />,
-  },
-  {
     element: <PrivateRoute />,
-    children: [],
+    children: [
+      {
+        path: "slide-analysis",
+        element: <SlideAnalysis />,
+      },
+    ],
   },
 ]);
