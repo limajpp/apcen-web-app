@@ -14,7 +14,7 @@ export default function SlideLabeling() {
   };
 
   return (
-    <Card className="bg-transparent ring-0 flex flex-col w-full gap-8 border-none shadow-none p-0">
+    <Card className="bg-transparent ring-0 flex flex-col w-full rounded-none gap-8 shadow-none p-0">
       <h3 className="font-clother text-[18px] text-[#2A59A9]">
         Selecione as opções corretas:
       </h3>
