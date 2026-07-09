@@ -10,32 +10,46 @@ import { Check, LoaderCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+type LoginFeedback = {
+  type: LoadingType;
+  message: string;
+};
+
 export default function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [hasAttempted, setHasAttempted] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [feedback, setFeedback] = useState<{
-    type: LoadingType;
-    message: string;
-  }>({ type: "idle", message: "" });
+  const [feedback, setFeedback] = useState<LoginFeedback>({
+    type: "idle",
+    message: "",
+  });
+
+  const isLoading = feedback.type === "loading";
+  const hasAttempted = feedback.type !== "idle";
 
   useEffect(() => {
     if (feedback.type !== "success") return;
 
     const timeout = setTimeout(() => {
       navigate("/slide-analysis");
-    }, 1200);
+    }, 2000);
 
     return () => clearTimeout(timeout);
   }, [feedback.type, navigate]);
+
+  useEffect(() => {
+    if (feedback.type !== "error") return;
+
+    const timeout = setTimeout(() => {
+      setFeedback({ type: "idle", message: "" });
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [feedback.type]);
 
   const handleLoginSubmit = async (credentials: {
     name: string;
     password: string;
   }) => {
-    setIsLoading(true);
-    setHasAttempted(true);
     setFeedback({ type: "loading", message: "Entrando na aplicação..." });
     try {
       const response = await api.post("auth/login", {
@@ -72,8 +86,6 @@ export default function LoginForm() {
           message: "Ocorreu um erro inesperado.",
         });
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 

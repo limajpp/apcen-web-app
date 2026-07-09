@@ -29,7 +29,6 @@ export default function Loading({
           <span className="w-6 h-6 shrink-0">{icon}</span>
         </div>
       )}
-
       <p
         className="font-clother text-[16px] text-[#2A59A9]"
         role="status"
