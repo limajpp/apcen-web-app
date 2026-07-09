@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Card } from "../ui/card";
-import { RadioGroup } from "../ui/radio-group";
+import { Card } from "../../ui/card";
+import { RadioGroup } from "../../ui/radio-group";
 import { SlideOptionRadio } from "./SlideOptionRadio";
 import { SlideOptionCheckbox } from "./SlideOptionCheckbox";
 

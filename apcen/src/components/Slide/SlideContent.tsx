@@ -1,7 +1,7 @@
 import ProgressBar from "../ProgressBar";
-import Slide from "./Slide";
+import Slide from "./SlideView/Slide";
 import SlideHeader from "./SlideHeader";
-import SlideLabeling from "./SlideLabeling";
+import SlideLabeling from "./SlideLabel/SlideLabeling";
 import SlideConfirmationDialog from "./SlideConfirmationDialog";
 import { Card } from "../ui/card";
 import useAuth from "@/hooks/useAuth";
