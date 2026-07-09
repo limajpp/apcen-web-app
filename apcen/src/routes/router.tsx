@@ -1,7 +1,8 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import Login from "@/pages/Login";
-import PrivateRoute from "@/components/PrivateRoute";
+import Auth from "@/pages/Auth";
 import SlideAnalysis from "@/pages/SlideAnalysis";
+import PrivateRoute from "@/components/PrivateRoute";
+
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 export const router = createBrowserRouter([
   {
@@ -10,7 +11,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <Auth />,
   },
   {
     element: <PrivateRoute />,

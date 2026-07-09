@@ -1,12 +1,17 @@
-import { Card } from "../ui/card";
 import headerIcon from "@/assets/HeaderIcon.svg";
-import LoginContent from "./LoginContent";
-import useAuth from "@/hooks/useAuth";
-import { api } from "@/services/api";
-import axios from "axios";
-import LoginHeader from "./LoginHeader";
-import Loading, { type LoadingType } from "../Loading";
 import { Check, LoaderCircle, X } from "lucide-react";
+
+import { Card } from "@/components/ui/card";
+
+import AuthForm from "@/components/Auth/AuthForm";
+import AuthHeader from "@/components/Auth/AuthHeader";
+import Loading, { type LoadingType } from "@/components/Loading";
+
+import useAuth from "@/hooks/useAuth";
+
+import axios from "axios";
+import { api } from "../../services/api";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +20,7 @@ type LoginFeedback = {
   message: string;
 };
 
-export default function LoginForm() {
+export default function AuthContent() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState<LoginFeedback>({
@@ -91,7 +96,7 @@ export default function LoginForm() {
 
   return (
     <Card className="bg-transparent ring-0 flex flex-col m-auto w-md gap-8 border-none shadow-none">
-      <LoginHeader
+      <AuthHeader
         headerText="Bem-vindo de volta!"
         className="flex flex-col justify-center items-center"
       >
@@ -102,8 +107,8 @@ export default function LoginForm() {
             alt="Logotipo do APCEN com símbolo de microrganismo estilizado."
           />
         </div>
-      </LoginHeader>
-      <LoginContent
+      </AuthHeader>
+      <AuthForm
         onSubmit={handleLoginSubmit}
         isSubmitDisabled={isLoading}
         className="flex flex-col gap-10"

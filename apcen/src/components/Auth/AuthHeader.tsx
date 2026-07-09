@@ -1,17 +1,17 @@
+import { CardHeader, CardTitle } from "@/components/ui/card";
 import type { ReactNode } from "react";
-import { CardHeader, CardTitle } from "../ui/card";
 
-interface LoginHeaderProps {
+interface AuthHeaderProps {
   className: string;
   headerText: string;
   children: ReactNode;
 }
 
-export default function LoginHeader({
+export default function AuthHeader({
   className,
   headerText,
   children,
-}: LoginHeaderProps) {
+}: AuthHeaderProps) {
   return (
     <CardHeader className={className}>
       {children}
