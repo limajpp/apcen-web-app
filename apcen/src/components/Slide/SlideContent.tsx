@@ -7,10 +7,14 @@ import { Card } from "../ui/card";
 import useAuth from "@/hooks/useAuth";
 import { useState } from "react";
 import checkBigSvg from "@/assets/Check_Big.svg";
+import { Badge } from "../ui/badge";
+import userCircleSvg from "@/assets/User_Circle.svg";
+import { Button } from "../ui/button";
 
 export default function SlideContent() {
   const { user } = useAuth();
-  const [isFinished] = useState<boolean>(false);
+  const [isFinished] = useState<boolean>(true);
+  const [hasConflict] = useState<boolean>(true);
 
   return (
     <>
@@ -49,12 +53,74 @@ export default function SlideContent() {
             </div>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <h3 className="font-clother text-[18px] text-[#2A59A9]">
-              Aguardando resultados dos demais usuários.
-            </h3>
-            <p className="font-clother text-[16px] text-[#3266BD]">
-              Consulte a página novamente mais tarde para conferir as respostas.
-            </p>
+            {!hasConflict ? (
+              <>
+                <h3 className="font-clother text-[18px] text-[#2A59A9]">
+                  Aguardando resultados dos demais usuários.
+                </h3>
+                <p className="font-clother text-[16px] text-[#3266BD]">
+                  Consulte a página novamente mais tarde para conferir as
+                  respostas.
+                </p>
+              </>
+            ) : (
+              <div className="flex flex-col items-start w-157.5 gap-4">
+                <h3 className="font-clother font-bold text-[24px] text-[#2A59A9]">
+                  Respostas em conflito:
+                </h3>
+                <div className="flex flex-col items-start self-stretch gap-6">
+                  {/* Fetch conflicted slide data from backend later... */}
+                  <div className="flex flex-col items-start self-stretch gap-4">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[12px] rounded-[8px] px-2 py-4 border-none shadow-none">
+                        Lâmina 20260512133131
+                      </Badge>
+                      <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[12px] rounded-[8px] px-2 py-4 border-none shadow-none">
+                        Patch_y2048_x26624
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 self-stretch">
+                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-48.5 gap-4 p-4 rounded-[16px]">
+                      <div className="flex justify-center items-center py-1.5 px-3 gap-2 rounded-full bg-[#B4D4ED]">
+                        <img src={userCircleSvg} alt="" className="w-5 h-5" />
+                        <h4 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                          Usuario01
+                        </h4>
+                      </div>
+                      {/* Fetch answer image url from backend later... */}
+                      <img
+                        src="/images/dummySlide.png"
+                        alt="Recorte da lâmina analisada"
+                        className="w-40 h-40 object-cover rounded-[16px]"
+                      />
+                      <div className="flex flex-col items-center gap-2">
+                        <h3 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                          Respostas
+                        </h3>
+                        {/* Fetch this user's answers from backend later... */}
+                        <ul className="flex flex-col items-center gap-1 list-none p-0 m-0">
+                          <li className="font-clother text-[12px] text-[#3266BD] text-center">
+                            Tem célula ganglionar
+                          </li>
+                          <li className="font-clother text-[12px] text-[#3266BD] text-center">
+                            Camadas Muscosa e Muscular
+                          </li>
+                        </ul>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
+                        // TODO: open full answer detail later...
+                      >
+                        Ver mais
+                      </Button>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
