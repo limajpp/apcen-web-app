@@ -38,21 +38,21 @@ export default function SlideContent() {
           />
         </Card>
       ) : (
-        <div className="flex flex-col items-center w-123 h-74.5 gap-6">
+        <div className="flex flex-col items-center w-full gap-10 pb-10">
           <div className="flex justify-center items-center shrink-0 aspect-square w-25 h-25 p-5.75 rounded-[80px] bg-[#FFF]">
             <span className="w-13.5 h-13.5 shrink-0 aspect-square">
               <img src={checkBigSvg} alt="" />
             </span>
           </div>
           <div className="flex flex-col items-center gap-8 self-stretch">
-            <div className="flex flex-col items-center w-123 gap-6">
-              <h2 className="font-clother text-[24px] text-[#3266BD]">
+            <div className="flex flex-col items-center w-full max-w-lg gap-6">
+              <h2 className="font-clother text-[24px] text-[#3266BD] text-center">
                 Questionário finalizado com sucesso!
               </h2>
               <ProgressBar className="w-full h-4 rounded-[32px] bg-[#A9C2E8]" />
             </div>
           </div>
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-2 w-full max-w-5xl mt-4">
             {!hasConflict ? (
               <>
                 <h3 className="font-clother text-[18px] text-[#2A59A9]">
@@ -64,58 +64,197 @@ export default function SlideContent() {
                 </p>
               </>
             ) : (
-              <div className="flex flex-col items-start w-157.5 gap-4">
+              <div className="flex flex-col items-start w-full gap-6">
                 <h3 className="font-clother font-bold text-[24px] text-[#2A59A9]">
-                  Respostas em conflito:
+                  Respostas em conflito
                 </h3>
+                {/* Fetch conflicted slide data from backend later... */}
                 <div className="flex flex-col items-start self-stretch gap-6">
-                  {/* Fetch conflicted slide data from backend later... */}
                   <div className="flex flex-col items-start self-stretch gap-4">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[12px] rounded-[8px] px-2 py-4 border-none shadow-none">
+                    <div className="flex items-center gap-3">
+                      <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[14px] rounded-[8px] px-3 py-1.5 border-none shadow-none">
                         Lâmina 20260512133131
                       </Badge>
-                      <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[12px] rounded-[8px] px-2 py-4 border-none shadow-none">
+                      <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[14px] rounded-[8px] px-3 py-1.5 border-none shadow-none">
                         Patch_y2048_x26624
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center gap-6 self-stretch">
-                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-48.5 gap-4 p-4 rounded-[16px]">
-                      <div className="flex justify-center items-center py-1.5 px-3 gap-2 rounded-full bg-[#B4D4ED]">
+                  <div className="flex flex-row flex-wrap items-stretch gap-6 self-stretch">
+                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-70 gap-5 p-6 rounded-[24px]">
+                      <div className="flex justify-center items-center py-2 px-4 gap-2 rounded-full bg-[#B4D4ED]">
                         <img src={userCircleSvg} alt="" className="w-5 h-5" />
                         <h4 className="font-clother font-bold text-[16px] text-[#2A59A9]">
-                          Usuario01
+                          Usuário 01
                         </h4>
                       </div>
-                      {/* Fetch answer image url from backend later... */}
                       <img
                         src="/images/dummySlide.png"
                         alt="Recorte da lâmina analisada"
-                        className="w-40 h-40 object-cover rounded-[16px]"
+                        className="w-36 h-36 object-cover rounded-[16px]"
                       />
-                      <div className="flex flex-col items-center gap-2">
-                        <h3 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                      <div className="flex flex-col items-center gap-3">
+                        <h3 className="font-clother font-bold text-[18px] text-[#2A59A9]">
                           Respostas
                         </h3>
-                        {/* Fetch this user's answers from backend later... */}
-                        <ul className="flex flex-col items-center gap-1 list-none p-0 m-0">
-                          <li className="font-clother text-[12px] text-[#3266BD] text-center">
+                        <ul className="flex flex-col items-center gap-1.5 list-none p-0 m-0">
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
                             Tem célula ganglionar
                           </li>
-                          <li className="font-clother text-[12px] text-[#3266BD] text-center">
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
                             Camadas Muscosa e Muscular
                           </li>
                         </ul>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
-                        // TODO: open full answer detail later...
-                      >
-                        Ver mais
-                      </Button>
+                      <div className="mt-auto pt-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
+                        >
+                          Ver mais
+                        </Button>
+                      </div>
+                    </Card>
+                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-70 gap-5 p-6 rounded-[24px]">
+                      <div className="flex justify-center items-center py-2 px-4 gap-2 rounded-full bg-[#B4D4ED]">
+                        <img src={userCircleSvg} alt="" className="w-5 h-5" />
+                        <h4 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                          Usuário 01
+                        </h4>
+                      </div>
+                      <img
+                        src="/images/dummySlide.png"
+                        alt="Recorte da lâmina analisada"
+                        className="w-36 h-36 object-cover rounded-[16px]"
+                      />
+                      <div className="flex flex-col items-center gap-3">
+                        <h3 className="font-clother font-bold text-[18px] text-[#2A59A9]">
+                          Respostas
+                        </h3>
+                        <ul className="flex flex-col items-center gap-1.5 list-none p-0 m-0">
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Tem célula ganglionar
+                          </li>
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Camadas Muscosa e Muscular
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="mt-auto pt-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
+                        >
+                          Ver mais
+                        </Button>
+                      </div>
+                    </Card>
+                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-70 gap-5 p-6 rounded-[24px]">
+                      <div className="flex justify-center items-center py-2 px-4 gap-2 rounded-full bg-[#B4D4ED]">
+                        <img src={userCircleSvg} alt="" className="w-5 h-5" />
+                        <h4 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                          Usuário 01
+                        </h4>
+                      </div>
+                      <img
+                        src="/images/dummySlide.png"
+                        alt="Recorte da lâmina analisada"
+                        className="w-36 h-36 object-cover rounded-[16px]"
+                      />
+                      <div className="flex flex-col items-center gap-3">
+                        <h3 className="font-clother font-bold text-[18px] text-[#2A59A9]">
+                          Respostas
+                        </h3>
+                        <ul className="flex flex-col items-center gap-1.5 list-none p-0 m-0">
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Tem célula ganglionar
+                          </li>
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Camadas Muscosa e Muscular
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="mt-auto pt-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
+                        >
+                          Ver mais
+                        </Button>
+                      </div>
+                    </Card>
+                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-70 gap-5 p-6 rounded-[24px]">
+                      <div className="flex justify-center items-center py-2 px-4 gap-2 rounded-full bg-[#B4D4ED]">
+                        <img src={userCircleSvg} alt="" className="w-5 h-5" />
+                        <h4 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                          Usuário 01
+                        </h4>
+                      </div>
+                      <img
+                        src="/images/dummySlide.png"
+                        alt="Recorte da lâmina analisada"
+                        className="w-36 h-36 object-cover rounded-[16px]"
+                      />
+                      <div className="flex flex-col items-center gap-3">
+                        <h3 className="font-clother font-bold text-[18px] text-[#2A59A9]">
+                          Respostas
+                        </h3>
+                        <ul className="flex flex-col items-center gap-1.5 list-none p-0 m-0">
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Tem célula ganglionar
+                          </li>
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Camadas Muscosa e Muscular
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="mt-auto pt-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
+                        >
+                          Ver mais
+                        </Button>
+                      </div>
+                    </Card>
+                    <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-70 gap-5 p-6 rounded-[24px]">
+                      <div className="flex justify-center items-center py-2 px-4 gap-2 rounded-full bg-[#B4D4ED]">
+                        <img src={userCircleSvg} alt="" className="w-5 h-5" />
+                        <h4 className="font-clother font-bold text-[16px] text-[#2A59A9]">
+                          Usuário 01
+                        </h4>
+                      </div>
+                      <img
+                        src="/images/dummySlide.png"
+                        alt="Recorte da lâmina analisada"
+                        className="w-36 h-36 object-cover rounded-[16px]"
+                      />
+                      <div className="flex flex-col items-center gap-3">
+                        <h3 className="font-clother font-bold text-[18px] text-[#2A59A9]">
+                          Respostas
+                        </h3>
+                        <ul className="flex flex-col items-center gap-1.5 list-none p-0 m-0">
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Tem célula ganglionar
+                          </li>
+                          <li className="font-clother text-[14px] text-[#3266BD] text-center leading-snug">
+                            Camadas Muscosa e Muscular
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="mt-auto pt-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
+                        >
+                          Ver mais
+                        </Button>
+                      </div>
                     </Card>
                   </div>
                 </div>
