@@ -1,14 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "../ui/card";
+import { Card } from "../../ui/card";
 
 import userCircleSvg from "@/assets/User_Circle.svg";
 
-interface ConflictCardProps {
+export interface ConflictCardProps {
   userName: string;
   answers: string[];
+  onOpen?: () => void;
 }
 
-export default function ConflictCard({ userName, answers }: ConflictCardProps) {
+export default function ConflictCard({
+  userName,
+  answers,
+  onOpen,
+}: ConflictCardProps) {
   return (
     <Card className="flex flex-col items-center bg-[#FFF] border-none shadow-[4px_4px_4px_0_rgba(14,32,62,0.10)] ring-0 w-70 gap-5 p-6 rounded-[24px]">
       <div className="flex justify-center items-center py-2 px-4 gap-2 rounded-full bg-[#B4D4ED]">
@@ -41,6 +46,7 @@ export default function ConflictCard({ userName, answers }: ConflictCardProps) {
         <Button
           type="button"
           variant="ghost"
+          onClick={onOpen}
           className="font-clother font-bold text-[14px] text-[#2A59A9] hover:text-[#2A59A9] hover:bg-transparent p-0 h-auto cursor-pointer"
         >
           Ver mais

@@ -1,14 +1,17 @@
 import { Badge } from "../ui/badge";
 import ProgressBar from "../ProgressBar";
-import ConflictCard from "./ConflictCard";
+import ConflictCard from "./Conflitct/ConflictCard";
+import type { ConflictCardProps } from "./Conflitct/ConflictCard";
 import checkBigSvg from "@/assets/Check_Big.svg";
 
 interface SlideSessionResultsProps {
   hasConflict: boolean;
+  onOpenConflict: (conflict: ConflictCardProps) => void;
 }
 
 export default function SlideSessionResults({
   hasConflict,
+  onOpenConflict,
 }: SlideSessionResultsProps) {
   const mockConflicts = Array(5).fill({
     userName: "Usuário 01",
@@ -63,6 +66,7 @@ export default function SlideSessionResults({
                     key={index}
                     userName={conflict.userName}
                     answers={conflict.answers}
+                    onOpen={() => onOpenConflict(conflict)}
                   />
                 ))}
               </div>
