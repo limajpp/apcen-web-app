@@ -20,7 +20,7 @@ export default function ActiveSlideSession({ user }: ActiveSlideSessionProps) {
         className="flex flex-col justify-center items-start gap-2"
       />
       {/* Fetch image url from backend later... */}
-      <ProgressBar className="w-full h-4 rounded-[32px] bg-[#A9C2E8]" />
+      <ProgressBar />
       <Slide
         className="relative w-full h-98 rounded-[16px] overflow-hidden shrink-0"
         imageUrl="https://drive.google.com/thumbnail?id=1fJ0yimv5jrlDdWttnIa059xQH41oPIIo&sz=w1000"

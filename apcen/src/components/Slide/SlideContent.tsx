@@ -9,8 +9,8 @@ import type { ConflictCardProps } from "./Conflitct/ConflictCard";
 
 export default function SlideContent() {
   const { user } = useAuth();
-  const [isFinished] = useState<boolean>(true);
-  const [hasConflict] = useState<boolean>(true);
+  const [isFinished] = useState<boolean>(false);
+  const [hasConflict] = useState<boolean>(false);
 
   const [openedConflict, setOpenedConflict] =
     useState<ConflictCardProps | null>(null);

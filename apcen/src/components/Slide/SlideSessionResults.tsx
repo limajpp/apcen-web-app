@@ -30,7 +30,7 @@ export default function SlideSessionResults({
           <h2 className="font-clother text-[24px] text-[#3266BD] text-center">
             Questionário finalizado com sucesso!
           </h2>
-          <ProgressBar className="w-full h-4 rounded-[32px] bg-[#A9C2E8]" />
+          <ProgressBar />
         </div>
       </div>
       <div className="flex flex-col items-center gap-2 w-full max-w-5xl mt-4">

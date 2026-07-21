@@ -1,34 +1,74 @@
-import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
 
-interface ProgressBarProps {
-  className?: string;
+function ProgressPiece({
+  value,
+  fillPercentage,
+}: {
+  value: number;
+  fillPercentage: number;
+}) {
+  const backgroundStyle = {
+    background: `linear-gradient(to right, #2A59A9 ${fillPercentage}%, #9FC1FE ${fillPercentage}%)`,
+  };
+  const textColor = fillPercentage >= 50 ? "text-[#F9F3EA]" : "text-[#3266BD]";
+
+  return (
+    <div
+      className="flex items-center justify-center w-6 h-6 rounded-[47.143px]"
+      style={backgroundStyle}
+    >
+      <span className={`font-clother text-[16px] leading-none ${textColor}`}>
+        {value}
+      </span>
+    </div>
+  );
 }
 
-export default function ProgressBar({ className }: ProgressBarProps) {
-  const [value, setValue] = useState<number>(0);
+export default function ProgressBar() {
+  const TOTAL_IMAGES = 43;
+  const TOTAL_PIECES = 10;
+
+  const [reviewedImages, setReviewedImages] = useState<number>(0);
 
   useEffect(() => {
-    if (value >= 100) return;
-
     const interval = setInterval(() => {
-      setValue((prev) => prev + 10);
-    }, 1000);
+      setReviewedImages((prev) => {
+        if (prev >= TOTAL_IMAGES) {
+          clearInterval(interval);
+          return TOTAL_IMAGES;
+        }
+        return prev + 1;
+      });
+    }, 300);
 
     return () => clearInterval(interval);
-  }, [value]);
+  }, []);
+
+  const imagesPerPiece = TOTAL_IMAGES / TOTAL_PIECES;
 
   return (
     <div className="flex justify-center items-center w-full h-10 pt-2.75 pb-2.5 px-3.75 gap-6.25">
-      <Progress
-        value={value}
-        max={100}
-        className={className}
-        indicatorClassName="bg-[#2A59A9]"
-      />
-      <span className="min-w-[4ch] text-right text-[#2A59A9] font-clother text-[16px]">
-        {value}%
-      </span>
+      {Array.from({ length: TOTAL_PIECES }, (_, index) => {
+        const value = index + 1;
+        const pieceStart = index * imagesPerPiece;
+        const pieceEnd = value * imagesPerPiece;
+        let fillPercentage = 0;
+
+        if (reviewedImages >= pieceEnd) {
+          fillPercentage = 100;
+        } else if (reviewedImages > pieceStart) {
+          fillPercentage =
+            ((reviewedImages - pieceStart) / imagesPerPiece) * 100;
+        }
+
+        return (
+          <ProgressPiece
+            key={index}
+            value={value}
+            fillPercentage={fillPercentage}
+          />
+        );
+      })}
     </div>
   );
 }
