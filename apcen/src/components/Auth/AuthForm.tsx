@@ -1,28 +1,34 @@
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "../ui/button";
-import { CardContent, CardFooter } from "../ui/card";
-import { FieldGroup, Field, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+
+import { Button } from "@/components/ui/button";
+import { CardContent, CardFooter } from "@/components/ui/card";
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
 import { useState, type FormEvent } from "react";
 
-interface LoginContentProps {
+interface AuthFormProps {
   onSubmit: (credentials: { name: string; password: string }) => void;
+  isSubmitDisabled: boolean;
   className?: string;
 }
 
-export default function LoginContent({
+export default function AuthForm({
   onSubmit,
+  isSubmitDisabled,
   className,
-}: LoginContentProps) {
+}: AuthFormProps) {
   const [userCredentials, setUserCredentials] = useState({
     name: "",
     password: "",
   });
   const [togglePassword, setTogglePassword] = useState<boolean>(false);
 
-  const isLoginDisabled =
+  const isFieldsInvalid =
     userCredentials.name.trim() === "" ||
     userCredentials.password.trim() === "";
+
+  const isButtonDisabled = isFieldsInvalid || isSubmitDisabled;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,7 +58,6 @@ export default function LoginContent({
               className="border border-solid px-3 h-10 focus-visible:ring-0 focus-visible:border-[#2A59A9] text-[#2A59A9] text-[16px] bg-[rgba(159,193,254,0.30)] border-[rgba(159,193,254,0.60)] rounded-[16px]"
             />
           </Field>
-
           <Field className="gap-2">
             <FieldLabel className="font-clother text-[#2A59A9] text-[18px]">
               Senha de acesso:
@@ -74,13 +79,31 @@ export default function LoginContent({
               />
               {togglePassword ? (
                 <Eye
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Ocultar senha"
                   onClick={() => setTogglePassword((prev) => !prev)}
-                  className={`cursor-pointer absolute right-4 top-2 ${isLoginDisabled ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setTogglePassword((prev) => !prev);
+                    }
+                  }}
+                  className={`cursor-pointer absolute right-4 top-2 ${isFieldsInvalid ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"}`}
                 />
               ) : (
                 <EyeOff
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Mostrar senha"
                   onClick={() => setTogglePassword((prev) => !prev)}
-                  className={`cursor-pointer absolute right-4 top-2 ${isLoginDisabled ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setTogglePassword((prev) => !prev);
+                    }
+                  }}
+                  className={`cursor-pointer absolute right-4 top-2 ${isFieldsInvalid ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"}`}
                 />
               )}
             </div>
@@ -90,8 +113,8 @@ export default function LoginContent({
       <CardFooter>
         <Button
           type="submit"
-          disabled={isLoginDisabled}
-          className={`mx-auto w-52 h-12 rounded-[16px] ${isLoginDisabled ? "bg-[rgba(159,193,254,0.30)] hover:bg-[rgba(159,193,254,0.30)] text-[#2A59A9]" : "bg-[#2A59A9] hover:bg-[#2A59A9] text-[#F9F3EA] font-bold cursor-pointer"} disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-100 font-clother text-[18px] font-normal transition-colors`}
+          disabled={isButtonDisabled}
+          className={`mx-auto w-52 h-12 rounded-[16px] ${isButtonDisabled ? "bg-[rgba(159,193,254,0.30)] hover:bg-[rgba(159,193,254,0.30)] text-[#2A59A9]" : "bg-[#2A59A9] hover:bg-[#2A59A9] text-[#F9F3EA] font-bold cursor-pointer"} disabled:pointer-events-auto disabled:cursor-not-allowed disabled:opacity-100 font-clother text-[18px] font-normal transition-colors`}
         >
           Entrar
         </Button>

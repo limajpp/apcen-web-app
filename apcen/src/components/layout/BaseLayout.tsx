@@ -1,16 +1,21 @@
-import { ResizablePanelGroup, ResizablePanel } from "@/components/ui/resizable";
-import Header from "../../Header";
-import LoginForm from "@/components/Auth/LoginForm";
-import SupportArt from "@/components/SupportArt";
+import type { ReactNode } from "react";
+import SupportArt from "../SupportArt";
+import { ResizablePanelGroup, ResizablePanel } from "../ui/resizable";
+import Header from "../Header";
 
-export default function AuthLayout() {
+interface BaseLayoutProps {
+  className: string;
+  children: ReactNode;
+}
+
+export default function BaseLayout({ className, children }: BaseLayoutProps) {
   return (
-    <ResizablePanelGroup className="h-full w-full" orientation="horizontal">
+    <ResizablePanelGroup className={className} orientation="horizontal">
       <ResizablePanel className="flex flex-col bg-[#F9F3EA]" defaultSize="75%">
         <ResizablePanelGroup orientation="vertical">
           <ResizablePanel className="flex flex-col" defaultSize="100%">
             <Header />
-            <LoginForm />
+            {children}
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
