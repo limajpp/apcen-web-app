@@ -5,15 +5,19 @@ import { CardContent, CardFooter } from "@/components/ui/card";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
+import type { LoginFeedback } from "./AuthContent";
+
 import { useState, type FormEvent } from "react";
 
 interface AuthFormProps {
+  feedback: LoginFeedback;
   onSubmit: (credentials: { name: string; password: string }) => void;
   isSubmitDisabled: boolean;
   className?: string;
 }
 
 export default function AuthForm({
+  feedback,
   onSubmit,
   isSubmitDisabled,
   className,
@@ -55,7 +59,7 @@ export default function AuthForm({
                   name: event.target.value,
                 }))
               }
-              className="border border-solid px-3 h-10 focus-visible:ring-0 focus-visible:border-[#2A59A9] text-[#2A59A9] text-[16px] bg-[rgba(159,193,254,0.30)] border-[rgba(159,193,254,0.60)] rounded-[16px]"
+              className={`border border-solid px-3 h-10 focus-visible:ring-0 text-[16px] bg-[rgba(159,193,254,0.30)] ${feedback.message === "Usuário ou senha incorretos." ? "border-[#C95555] text-[#C95555] focus-visible:border-[#C95555]" : "border-[rgba(159,193,254,0.60)] text-[#2A59A9] focus-visible:border-[#2A59A9]"} rounded-[16px]`}
             />
           </Field>
           <Field className="gap-2">
@@ -75,7 +79,7 @@ export default function AuthForm({
                   }))
                 }
                 type={togglePassword ? "text" : "password"}
-                className={`border border-solid px-3 h-10 ${!togglePassword ? "tracking-[0.25em]" : ""} focus-visible:ring-0 focus-visible:border-[#2A59A9] text-[#2A59A9] text-[16px] bg-[rgba(159,193,254,0.30)] border-[rgba(159,193,254,0.60)] rounded-[16px]`}
+                className={`border border-solid px-3 h-10 ${!togglePassword ? "tracking-[0.25em]" : ""} focus-visible:ring-0 ${feedback.message === "Usuário ou senha incorretos." ? "border-[#C95555] text-[#C95555] focus-visible:border-[#C95555]" : "focus-visible:border-[#2A59A9] text-[#2A59A9] border-[rgba(159,193,254,0.60)]"} text-[16px] bg-[rgba(159,193,254,0.30)] rounded-[16px]`}
               />
               {togglePassword ? (
                 <Eye
@@ -89,7 +93,7 @@ export default function AuthForm({
                       setTogglePassword((prev) => !prev);
                     }
                   }}
-                  className={`cursor-pointer absolute right-4 top-2 ${isFieldsInvalid ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"}`}
+                  className={`cursor-pointer absolute right-4 top-2 ${isFieldsInvalid ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"} ${feedback.message === "Usuário ou senha incorretos." ? "text-[#C95555]" : ""}`}
                 />
               ) : (
                 <EyeOff
@@ -103,7 +107,7 @@ export default function AuthForm({
                       setTogglePassword((prev) => !prev);
                     }
                   }}
-                  className={`cursor-pointer absolute right-4 top-2 ${isFieldsInvalid ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"}`}
+                  className={`cursor-pointer absolute right-4 top-2 ${isFieldsInvalid ? "text-[rgba(159,193,254,0.6)]" : "text-[#2A59A9]"} ${feedback.message === "Usuário ou senha incorretos." ? "text-[#C95555]" : ""}`}
                 />
               )}
             </div>

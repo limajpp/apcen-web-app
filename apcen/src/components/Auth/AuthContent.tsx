@@ -1,5 +1,5 @@
 import headerIcon from "@/assets/HeaderIcon.svg";
-import { Check, LoaderCircle, X } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 
@@ -15,7 +15,7 @@ import { api } from "../../services/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-type LoginFeedback = {
+export type LoginFeedback = {
   type: LoadingType;
   message: string;
 };
@@ -34,11 +34,7 @@ export default function AuthContent() {
   useEffect(() => {
     if (feedback.type !== "success") return;
 
-    const timeout = setTimeout(() => {
-      navigate("/slide-analysis");
-    }, 2000);
-
-    return () => clearTimeout(timeout);
+    navigate("/slide-analysis");
   }, [feedback.type, navigate]);
 
   useEffect(() => {
@@ -46,7 +42,7 @@ export default function AuthContent() {
 
     const timeout = setTimeout(() => {
       setFeedback({ type: "idle", message: "" });
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timeout);
   }, [feedback.type]);
@@ -64,7 +60,7 @@ export default function AuthContent() {
       await login(response.data.accessToken, response.data.refreshToken);
       setFeedback({
         type: "success",
-        message: "Usuário reconhecido com sucesso!",
+        message: "",
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -88,7 +84,7 @@ export default function AuthContent() {
         console.error("Unexpected error during login...", error);
         setFeedback({
           type: "error",
-          message: "Ocorreu um erro inesperado.",
+          message: "Sistema fora do ar.",
         });
       }
     }
@@ -109,6 +105,7 @@ export default function AuthContent() {
         </div>
       </AuthHeader>
       <AuthForm
+        feedback={feedback}
         onSubmit={handleLoginSubmit}
         isSubmitDisabled={isLoading}
         className="flex flex-col gap-10"
@@ -121,8 +118,6 @@ export default function AuthContent() {
               <LoaderCircle className="stroke-[#9FC1FE] stroke-[2px] animate-spin" />
             ) : feedback.type === "error" ? (
               <X className="stroke-[#FFF] stroke-[2px]" />
-            ) : feedback.type === "success" ? (
-              <Check className="stroke-[#3266BD] stroke-[3px]" />
             ) : null
           }
           className="m-auto flex justify-center items-center w-fit p-2 gap-4"
