@@ -9,7 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogAction,
 } from "../ui/alert-dialog";
-import { ChevronRight, CircleX } from "lucide-react";
+import { CircleX } from "lucide-react";
+import chevronRight from "@/assets/Chevron_Right.svg";
 
 interface SlideConfirmationDialogProps {
   confirmationText: string;
@@ -26,10 +27,10 @@ export default function SlideConfirmationDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          size="icon"
-          className="ml-auto flex items-center justify-center mt-4 h-8 w-8 rounded-full bg-[#2A59A9] hover:bg-[#2A59A9] cursor-pointer shrink-0"
+          variant="ghost"
+          className="flex items-center justify-center w-fit h-fit bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
         >
-          <ChevronRight className="text-[#F9F3EA]" />
+          <img src={chevronRight} alt="" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col justify-center items-center w-lg pt-2.5 pr-3 pb-2.25 pl-2.75">

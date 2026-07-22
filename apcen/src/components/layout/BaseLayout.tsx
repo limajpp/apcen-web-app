@@ -11,7 +11,7 @@ interface BaseLayoutProps {
 export default function BaseLayout({ className, children }: BaseLayoutProps) {
   return (
     <ResizablePanelGroup className={className} orientation="horizontal">
-      <ResizablePanel className="flex flex-col bg-[#F9F3EA]" defaultSize="75%">
+      <ResizablePanel className="flex flex-col bg-[#F9F3EA]" defaultSize="70%">
         <ResizablePanelGroup orientation="vertical">
           <ResizablePanel className="flex flex-col" defaultSize="100%">
             <Header />
@@ -19,7 +19,7 @@ export default function BaseLayout({ className, children }: BaseLayoutProps) {
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
-      <ResizablePanel className="bg-transparent" defaultSize="25%">
+      <ResizablePanel className="bg-transparent" defaultSize="30%">
         <SupportArt />
       </ResizablePanel>
     </ResizablePanelGroup>
