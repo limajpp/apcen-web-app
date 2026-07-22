@@ -16,23 +16,31 @@ interface SlideConfirmationDialogProps {
   confirmationText: string;
   actionButtonText: string;
   cancelButtonText: string;
+  isLastImage: boolean;
+  onNext: () => void;
 }
 
 export default function SlideConfirmationDialog({
   confirmationText,
   actionButtonText,
   cancelButtonText,
+  isLastImage,
+  onNext,
 }: SlideConfirmationDialogProps) {
+  const ActionButton = (
+    <Button
+      variant="ghost"
+      className="flex items-center justify-center w-fit h-fit bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
+      onClick={!isLastImage ? onNext : undefined}
+    >
+      <img src={chevronRight} alt="" />
+    </Button>
+  );
+  if (!isLastImage) return ActionButton;
+
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex items-center justify-center w-fit h-fit bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
-        >
-          <img src={chevronRight} alt="" />
-        </Button>
-      </AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{ActionButton}</AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col justify-center items-center w-lg pt-2.5 pr-3 pb-2.25 pl-2.75">
         <div className="flex flex-col items-center gap-2 shrink-0 w-122.25">
           <AlertDialogCancel className="ml-auto" asChild>

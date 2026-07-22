@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 function ProgressPiece({
   value,
   fillPercentage,
@@ -24,27 +22,15 @@ function ProgressPiece({
   );
 }
 
-export default function ProgressBar() {
-  const TOTAL_IMAGES = 43;
+export default function ProgressBar({
+  reviewedImages,
+  totalImages,
+}: {
+  reviewedImages: number;
+  totalImages: number;
+}) {
   const TOTAL_PIECES = 10;
-
-  const [reviewedImages, setReviewedImages] = useState<number>(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setReviewedImages((prev) => {
-        if (prev >= TOTAL_IMAGES) {
-          clearInterval(interval);
-          return TOTAL_IMAGES;
-        }
-        return prev + 1;
-      });
-    }, 300);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const imagesPerPiece = TOTAL_IMAGES / TOTAL_PIECES;
+  const imagesPerPiece = totalImages / TOTAL_PIECES;
 
   return (
     <div className="flex justify-center items-center w-full h-10 pt-2.75 pb-2.5 px-3.75 gap-6.25">
