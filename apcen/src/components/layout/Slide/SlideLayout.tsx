@@ -19,6 +19,8 @@ const MOCK_IMAGES = [
 
 export default function SlideLayout() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFinished, setIsFinished] = useState<boolean>(false);
+  const [hasConflict, setHasConflict] = useState<boolean>(false);
   const totalImages = MOCK_IMAGES.length;
 
   const handleNext = () => {
@@ -36,20 +38,27 @@ export default function SlideLayout() {
           <div className="grid grid-cols-3 w-full max-w-6xl items-center">
             <div className="col-start-2 flex justify-center">
               <SlideContent
+                isFinished={isFinished}
+                setIsFinished={setIsFinished}
+                hasConflict={hasConflict}
+                setHasConflict={setHasConflict}
                 imageUrl={MOCK_IMAGES[currentIndex]}
                 reviewedImages={currentIndex + 1}
                 totalImages={totalImages}
               />
             </div>
-            <div className="col-start-3 flex justify-center pl-8 md:pl-26">
-              <SlideConfirmationDialog
-                confirmationText="Deseja concluir o questionário?"
-                cancelButtonText="Cancelar"
-                actionButtonText="Finalizar"
-                isLastImage={isLastImage}
-                onNext={handleNext}
-              />
-            </div>
+            {!isFinished && (
+              <div className="col-start-3 flex justify-center pl-8 md:pl-26">
+                <SlideConfirmationDialog
+                  setIsFinished={setIsFinished}
+                  confirmationText="Deseja concluir o questionário?"
+                  cancelButtonText="Cancelar"
+                  actionButtonText="Finalizar"
+                  isLastImage={isLastImage}
+                  onNext={handleNext}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

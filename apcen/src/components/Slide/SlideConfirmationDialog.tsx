@@ -11,8 +11,10 @@ import {
 } from "../ui/alert-dialog";
 import { CircleX } from "lucide-react";
 import chevronRight from "@/assets/Chevron_Right.svg";
+import type { Dispatch, SetStateAction } from "react";
 
 interface SlideConfirmationDialogProps {
+  setIsFinished: Dispatch<SetStateAction<boolean>>;
   confirmationText: string;
   actionButtonText: string;
   cancelButtonText: string;
@@ -21,6 +23,7 @@ interface SlideConfirmationDialogProps {
 }
 
 export default function SlideConfirmationDialog({
+  setIsFinished,
   confirmationText,
   actionButtonText,
   cancelButtonText,
@@ -31,7 +34,7 @@ export default function SlideConfirmationDialog({
     <Button
       variant="ghost"
       className="flex items-center justify-center w-fit h-fit bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
-      onClick={!isLastImage ? onNext : undefined}
+      onClick={onNext}
     >
       <img src={chevronRight} alt="" />
     </Button>
@@ -62,7 +65,10 @@ export default function SlideConfirmationDialog({
               <AlertDialogCancel className="w-32.75 h-12 p-2 shrink-0 rounded-[8px] bg-[rgba(159,193,254,0.50)]! text-[#3266BD]! hover:bg-[#3266BD]! hover:text-[#FFF]! font-clother text-[16px] cursor-pointer">
                 {cancelButtonText}
               </AlertDialogCancel>
-              <AlertDialogAction className="w-32.75 h-12 p-2 shrink-0 rounded-[8px] bg-[rgba(159,193,254,0.50)]! text-[#3266BD]! hover:bg-[#3266BD]! hover:text-[#FFF]! font-clother text-[16px] cursor-pointer">
+              <AlertDialogAction
+                onClick={() => setIsFinished(true)}
+                className="w-32.75 h-12 p-2 shrink-0 rounded-[8px] bg-[rgba(159,193,254,0.50)]! text-[#3266BD]! hover:bg-[#3266BD]! hover:text-[#FFF]! font-clother text-[16px] cursor-pointer"
+              >
                 {actionButtonText}
               </AlertDialogAction>
             </AlertDialogFooter>
