@@ -1,77 +1,47 @@
-import { Badge } from "../ui/badge";
 import ProgressBar from "../ProgressBar";
-import ConflictCard from "./Conflitct/ConflictCard";
-import type { ConflictCardProps } from "./Conflitct/ConflictCard";
 import checkBigSvg from "@/assets/Check_Big.svg";
 
 interface SlideSessionResultsProps {
+  reviewedImages: number;
+  totalImages: number;
   hasConflict: boolean;
-  onOpenConflict: (conflict: ConflictCardProps) => void;
 }
 
 export default function SlideSessionResults({
+  reviewedImages,
+  totalImages,
   hasConflict,
-  onOpenConflict,
 }: SlideSessionResultsProps) {
-  const mockConflicts = Array(5).fill({
-    userName: "Usuário 01",
-    answers: ["Tem célula ganglionar", "Camadas Muscosa e Muscular"],
-  });
+  // Mocked conflicts value
+  const TOTAL_CONFLICTS = 212;
 
   return (
-    <div className="flex flex-col items-center w-full gap-10 pb-10">
+    <div className="flex flex-col items-center w-fit gap-6">
       <div className="flex justify-center items-center shrink-0 aspect-square w-25 h-25 p-5.75 rounded-[80px] bg-[#FFF]">
-        <span className="w-13.5 h-13.5 shrink-0 aspect-square">
-          <img src={checkBigSvg} alt="" />
-        </span>
+        <img src={checkBigSvg} alt="" />
       </div>
       <div className="flex flex-col items-center gap-8 self-stretch">
         <div className="flex flex-col items-center w-full max-w-lg gap-6">
-          <h2 className="font-clother text-[24px] text-[#3266BD] text-center">
+          <h2 className="font-clother text-[24px] text-[#3266BD]">
             Questionário finalizado com sucesso!
           </h2>
-          <ProgressBar />
+          <ProgressBar
+            reviewedImages={reviewedImages}
+            totalImages={totalImages}
+          />
         </div>
-      </div>
-      <div className="flex flex-col items-center gap-2 w-full max-w-5xl mt-4">
         {!hasConflict ? (
-          <>
+          <div className="flex flex-col items-center w-fit gap-2 text-center">
             <h3 className="font-clother text-[18px] text-[#2A59A9]">
-              Aguardando resultados dos demais usuários.
+              Aguarde a adição de novas lâminas
             </h3>
-            <p className="font-clother text-[16px] text-[#3266BD]">
-              Consulte a página novamente mais tarde para conferir as respostas.
+            <p className="font-clother text-[16px] text-[#3266BD] whitespace-nowrap">
+              Consulte a página novamente mais tarde para conferir novas
+              questões.
             </p>
-          </>
-        ) : (
-          <div className="flex flex-col items-start w-full gap-6">
-            <h3 className="font-clother font-bold text-[24px] text-[#2A59A9]">
-              Respostas em conflito
-            </h3>
-            {/* Fetch conflicted slide data from backend later... */}
-            <div className="flex flex-col items-start self-stretch gap-6">
-              <div className="flex flex-col items-start self-stretch gap-4">
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[14px] rounded-[8px] px-3 py-1.5 border-none shadow-none">
-                    Lâmina 20260512133131
-                  </Badge>
-                  <Badge className="bg-[#9FC1FE] text-[#2A59A9] font-clother font-bold text-[14px] rounded-[8px] px-3 py-1.5 border-none shadow-none">
-                    Patch_y2048_x26624
-                  </Badge>
-                </div>
-              </div>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] justify-items-center sm:justify-items-start gap-6 self-stretch w-full">
-                {mockConflicts.map((conflict, index) => (
-                  <ConflictCard
-                    key={index}
-                    userName={conflict.userName}
-                    answers={conflict.answers}
-                    onOpen={() => onOpenConflict(conflict)}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
+        ) : (
+          <h3 className="font-clother text-[18px] text-[#2A59A9]">{`${TOTAL_CONFLICTS} ${TOTAL_CONFLICTS > 1 ? "recortes" : "recorte"} em conflito.`}</h3>
         )}
       </div>
     </div>

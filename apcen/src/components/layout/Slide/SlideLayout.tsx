@@ -20,7 +20,7 @@ const MOCK_IMAGES = [
 export default function SlideLayout() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  const [hasConflict, setHasConflict] = useState<boolean>(false);
+  const [hasConflict] = useState<boolean>(false);
   const totalImages = MOCK_IMAGES.length;
 
   const handleNext = () => {
@@ -39,9 +39,7 @@ export default function SlideLayout() {
             <div className="col-start-2 flex justify-center">
               <SlideContent
                 isFinished={isFinished}
-                setIsFinished={setIsFinished}
                 hasConflict={hasConflict}
-                setHasConflict={setHasConflict}
                 imageUrl={MOCK_IMAGES[currentIndex]}
                 reviewedImages={currentIndex + 1}
                 totalImages={totalImages}
