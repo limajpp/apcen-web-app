@@ -15,7 +15,9 @@ function ProgressPiece({
       className="flex items-center justify-center w-6 h-6 rounded-[47.143px]"
       style={backgroundStyle}
     >
-      <span className={`font-clother text-[16px] leading-none ${textColor}`}>
+      <span
+        className={`mb-1 ${value === 10 ? "ml-px" : ""} font-clother text-[16px] leading-none ${textColor}`}
+      >
         {value}
       </span>
     </div>
