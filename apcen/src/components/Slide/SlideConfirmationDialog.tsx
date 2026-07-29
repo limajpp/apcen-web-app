@@ -11,7 +11,7 @@ import {
 } from "../ui/alert-dialog";
 import { CircleX } from "lucide-react";
 import chevronRight from "@/assets/Chevron_Right.svg";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 interface SlideConfirmationDialogProps {
   setIsFinished: Dispatch<SetStateAction<boolean>>;
@@ -30,10 +30,35 @@ export default function SlideConfirmationDialog({
   isLastImage,
   onNext,
 }: SlideConfirmationDialogProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" || event.repeat || isDialogOpen) return;
+
+      const triggerButton = document.getElementById(
+        "slide-confirmation-trigger",
+      );
+
+      if (triggerButton instanceof HTMLButtonElement) {
+        event.preventDefault();
+        triggerButton.click();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDialogOpen]);
+
   const ActionButton = (
     <Button
+      id="slide-confirmation-trigger"
+      type="button"
       variant="ghost"
-      className="flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
+      className="flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:outline-none"
       onClick={!isLastImage ? onNext : undefined}
     >
       <img src={chevronRight} alt="" />
@@ -42,7 +67,7 @@ export default function SlideConfirmationDialog({
   if (!isLastImage) return ActionButton;
 
   return (
-    <AlertDialog>
+    <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialogTrigger asChild>{ActionButton}</AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col justify-center items-center w-lg pt-2.5 pr-3 pb-2.25 pl-2.75">
         <div className="flex flex-col items-center gap-2 shrink-0 w-122.25">
