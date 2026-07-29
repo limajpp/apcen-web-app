@@ -33,8 +33,8 @@ export default function SlideConfirmationDialog({
   const ActionButton = (
     <Button
       variant="ghost"
-      className="flex items-center justify-center w-fit h-fit bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
-      onClick={onNext}
+      className="flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0"
+      onClick={!isLastImage ? onNext : undefined}
     >
       <img src={chevronRight} alt="" />
     </Button>

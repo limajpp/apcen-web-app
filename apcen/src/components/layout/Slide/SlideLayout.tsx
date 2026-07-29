@@ -33,10 +33,11 @@ export default function SlideLayout() {
 
   return (
     <BaseLayout className="h-full w-full">
-      <div className="flex-1 w-full overflow-y-auto scrollbar-hide">
-        <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-10">
-          <div className="grid grid-cols-3 w-full max-w-6xl items-center">
-            <div className="col-start-2 flex justify-center">
+      <div className="flex-1 w-full overflow-y-auto scrollbar-hide flex flex-col">
+        <div className="flex flex-1 w-full min-h-full relative">
+          <div className="grid grid-cols-[1fr_auto_1fr] w-full items-stretch">
+            <div />
+            <div className="flex justify-center items-center py-4 md:py-10">
               <SlideContent
                 isFinished={isFinished}
                 hasConflict={hasConflict}
@@ -45,8 +46,8 @@ export default function SlideLayout() {
                 totalImages={totalImages}
               />
             </div>
-            {!isFinished && (
-              <div className="col-start-3 flex justify-center pl-8 md:pl-26">
+            {!isFinished ? (
+              <div className="flex items-stretch justify-center">
                 <SlideConfirmationDialog
                   setIsFinished={setIsFinished}
                   confirmationText="Deseja concluir o questionário?"
@@ -56,6 +57,8 @@ export default function SlideLayout() {
                   onNext={handleNext}
                 />
               </div>
+            ) : (
+              <div />
             )}
           </div>
         </div>
