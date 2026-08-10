@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
-import SupportArt from "../SupportArt";
-import { ResizablePanelGroup, ResizablePanel } from "../ui/resizable";
-import Header from "../Header";
+import SupportArt from "../components/SupportArt";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+} from "../components/ui/resizable";
+import Header from "../components/Header";
 
 interface BaseLayoutProps {
   className: string;

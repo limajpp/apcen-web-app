@@ -1,4 +1,4 @@
-import SlideLayout from "@/components/layout/Slide/SlideLayout";
+import SlideLayout from "@/layout/Slide/SlideLayout";
 
 export default function SlideAnalysis() {
   return <SlideLayout />;

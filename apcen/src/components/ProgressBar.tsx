@@ -16,7 +16,7 @@ function ProgressPiece({
       style={backgroundStyle}
     >
       <span
-        className={`mb-1 ${value === 10 ? "ml-px" : ""} font-clother text-[16px] leading-none ${textColor}`}
+        className={`mb-px font-clother text-[16px] leading-none ${textColor}`}
       >
         {value}
       </span>

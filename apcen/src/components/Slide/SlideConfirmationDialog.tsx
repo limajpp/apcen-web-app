@@ -11,24 +11,24 @@ import {
 } from "../ui/alert-dialog";
 import { CircleX } from "lucide-react";
 import chevronRight from "@/assets/Chevron_Right.svg";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState } from "react";
 
 interface SlideConfirmationDialogProps {
-  setIsFinished: Dispatch<SetStateAction<boolean>>;
   confirmationText: string;
   actionButtonText: string;
   cancelButtonText: string;
   isLastImage: boolean;
   onNext: () => void;
+  onFinish: () => void;
 }
 
 export default function SlideConfirmationDialog({
-  setIsFinished,
   confirmationText,
   actionButtonText,
   cancelButtonText,
   isLastImage,
   onNext,
+  onFinish,
 }: SlideConfirmationDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -91,7 +91,7 @@ export default function SlideConfirmationDialog({
                 {cancelButtonText}
               </AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => setIsFinished(true)}
+                onClick={onFinish}
                 className="w-32.75 h-12 p-2 shrink-0 rounded-[8px] bg-[rgba(159,193,254,0.50)]! text-[#3266BD]! hover:bg-[#3266BD]! hover:text-[#FFF]! font-clother text-[16px] cursor-pointer"
               >
                 {actionButtonText}

@@ -5,12 +5,16 @@ import SlideLabeling from "./SlideLabel/SlideLabeling";
 
 import { Card } from "@/components/ui/card";
 import type { User } from "@/store/auth";
+import type { LabelFieldsState } from "@/layout/Slide/SlideLayout";
+import type { Dispatch, SetStateAction } from "react";
 
 interface ActiveSlideSessionProps {
   user: User | null;
   imageUrl: string;
   reviewedImages: number;
   totalImages: number;
+  labelFields: LabelFieldsState;
+  setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
 }
 
 export default function ActiveSlideSession({
@@ -18,6 +22,8 @@ export default function ActiveSlideSession({
   imageUrl,
   reviewedImages,
   totalImages,
+  labelFields,
+  setLabelFields,
 }: ActiveSlideSessionProps) {
   return (
     <div className="flex flex-row items-center">
@@ -34,7 +40,10 @@ export default function ActiveSlideSession({
           className="relative w-full h-98 rounded-[16px] overflow-hidden shrink-0"
           imageUrl={imageUrl}
         />
-        <SlideLabeling />
+        <SlideLabeling
+          labelFields={labelFields}
+          setLabelFields={setLabelFields}
+        />
       </Card>
     </div>
   );
