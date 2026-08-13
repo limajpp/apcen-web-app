@@ -1,6 +1,6 @@
 import ProgressBar from "../ProgressBar";
 import Slide from "./SlideView/Slide";
-import SlideHeader from "./SlideHeader";
+import Header from "../Header";
 import SlideLabeling from "./SlideLabel/SlideLabeling";
 
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import type { LabelFieldsState } from "@/layout/Slide/SlideLayout";
 import type { Dispatch, SetStateAction } from "react";
 
 interface ActiveSlideSessionProps {
-  user: User | null;
+  user: User;
   imageUrl: string;
   reviewedImages: number;
   totalImages: number;
@@ -28,9 +28,10 @@ export default function ActiveSlideSession({
   return (
     <div className="flex flex-row items-center">
       <Card className="bg-transparent ring-0 flex flex-col w-full max-w-lg gap-6 border-none shadow-none p-0">
-        <SlideHeader
+        <Header
           userName={user?.username}
           className="flex flex-col justify-center items-start gap-2"
+          text="Identifique as opções na lâmina:"
         />
         <ProgressBar
           reviewedImages={reviewedImages}

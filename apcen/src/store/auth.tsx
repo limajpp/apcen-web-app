@@ -8,7 +8,7 @@ export interface User {
 }
 
 type AuthContextType = {
-  user: User | null;
+  user: User;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (accessToken: string, refreshToken: string) => Promise<void>;
@@ -20,7 +20,11 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>({
+    id: "",
+    username: "",
+    createdAt: "",
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const response = await api.get("/user/me");
           setUser(response.data);
         } catch (error) {
-          setUser(null);
+          console.error(error);
         }
       }
       setIsLoading(false);
@@ -58,7 +62,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("@App:token");
     localStorage.removeItem("@App:refreshToken");
-    setUser(null);
+    setUser({
+      id: "",
+      username: "",
+      createdAt: "",
+    });
     window.location.href = "/";
   };
 

@@ -1,12 +1,20 @@
-import headerIcon from "@/assets/HeaderIcon.svg";
+interface HeaderProps {
+  userName: string;
+  className?: string;
+  text: string;
+}
 
-export default function Header() {
+export default function Header({
+  userName,
+  className = "flex flex-col justify-center items-start",
+  text,
+}: HeaderProps) {
   return (
-    <div className="flex flex-row justify-center items-center h-fit w-fit py-1.75 px-4.75 gap-[8.78px]">
-      <img src={headerIcon} alt="" aria-hidden="true" />
-      <h1 className="font-gunter text-[28.646px] text-[#2A59A9] leading-none mt-1">
-        APCEN
-      </h1>
+    <div className={className}>
+      <h2 className="text-[#2A59A9] font-clother text-2xl font-bold">
+        {`Olá, ${userName}!`}
+      </h2>
+      <p className="text-[#2A59A9] font-clother text-[18px]">{text}</p>
     </div>
   );
 }

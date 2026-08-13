@@ -1,4 +1,4 @@
-import headerIcon from "@/assets/HeaderIcon.svg";
+import logo from "@/assets/logo.svg";
 import { LoaderCircle, X } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -99,7 +99,7 @@ export default function AuthContent() {
         <div className="flex items-center justify-center h-28 w-28 bg-[rgba(159,193,254,0.60)] rounded-full mb-4">
           <img
             className="w-19 h-19"
-            src={headerIcon}
+            src={logo}
             alt="Logotipo do APCEN com símbolo de microrganismo estilizado."
           />
         </div>
