@@ -123,7 +123,7 @@ export default function SlideLayout() {
                 isFinished={isFinished}
                 hasConflict={hasConflict}
                 imageUrl={imagesQueue[currentIndex]?.url}
-                reviewedImages={currentIndex + 1}
+                reviewedImages={currentIndex}
                 totalImages={totalImages}
                 labelFields={labelFields}
                 setLabelFields={setLabelFields}
@@ -135,7 +135,7 @@ export default function SlideLayout() {
                   confirmationText="Deseja concluir o questionário?"
                   cancelButtonText="Cancelar"
                   actionButtonText="Finalizar"
-                  isLastImage={isLastImage}
+                  requireDialog={isLastImage}
                   onNext={handleNext}
                   onFinish={handleFinish}
                 />

@@ -17,16 +17,18 @@ interface SlideConfirmationDialogProps {
   confirmationText: string;
   actionButtonText: string;
   cancelButtonText: string;
-  isLastImage: boolean;
-  onNext: () => void;
-  onFinish: () => void;
+  requireDialog?: boolean;
+  disabled?: boolean;
+  onNext?: () => void;
+  onFinish?: () => void;
 }
 
 export default function SlideConfirmationDialog({
   confirmationText,
   actionButtonText,
   cancelButtonText,
-  isLastImage,
+  requireDialog = true,
+  disabled = false,
   onNext,
   onFinish,
 }: SlideConfirmationDialogProps) {
@@ -34,7 +36,8 @@ export default function SlideConfirmationDialog({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Enter" || event.repeat || isDialogOpen) return;
+      if (event.key !== "Enter" || event.repeat || isDialogOpen || disabled)
+        return;
 
       const triggerButton = document.getElementById(
         "slide-confirmation-trigger",
@@ -51,20 +54,24 @@ export default function SlideConfirmationDialog({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isDialogOpen]);
+  }, [isDialogOpen, disabled]);
 
   const ActionButton = (
     <Button
       id="slide-confirmation-trigger"
       type="button"
       variant="ghost"
-      className="flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none cursor-pointer shrink-0 p-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:outline-none"
-      onClick={!isLastImage ? onNext : undefined}
+      disabled={disabled}
+      className={`flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none shrink-0 p-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:outline-none ${
+        disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
+      }`}
+      onClick={!requireDialog ? onNext : undefined}
     >
       <img src={chevronRight} alt="" />
     </Button>
   );
-  if (!isLastImage) return ActionButton;
+
+  if (!requireDialog) return ActionButton;
 
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -25,14 +25,17 @@ function ProgressPiece({
 }
 
 export default function ProgressBar({
-  reviewedImages,
-  totalImages,
+  reviewedImages = 0,
+  totalImages = 0,
+  isFullyFilled = false,
 }: {
-  reviewedImages: number;
-  totalImages: number;
+  reviewedImages?: number;
+  totalImages?: number;
+  isFullyFilled?: boolean;
 }) {
   const TOTAL_PIECES = 10;
-  const imagesPerPiece = totalImages / TOTAL_PIECES;
+  const safeTotalImages = totalImages > 0 ? totalImages : TOTAL_PIECES;
+  const imagesPerPiece = safeTotalImages / TOTAL_PIECES;
 
   return (
     <div className="flex justify-center items-center w-full h-10 pt-2.75 pb-2.5 px-3.75 gap-6.25">
@@ -42,7 +45,7 @@ export default function ProgressBar({
         const pieceEnd = value * imagesPerPiece;
         let fillPercentage = 0;
 
-        if (reviewedImages >= pieceEnd) {
+        if (isFullyFilled || reviewedImages >= pieceEnd) {
           fillPercentage = 100;
         } else if (reviewedImages > pieceStart) {
           fillPercentage =
