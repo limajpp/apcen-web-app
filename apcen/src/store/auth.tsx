@@ -4,6 +4,8 @@ import { api } from "@/services/api";
 export interface User {
   id: string;
   username: string;
+  role: "" | "analyst" | "admin";
+  goal: number | null;
   createdAt: string;
 }
 
@@ -23,6 +25,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User>({
     id: "",
     username: "",
+    role: "",
+    goal: null,
     createdAt: "",
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser({
       id: "",
       username: "",
+      role: "",
+      goal: null,
       createdAt: "",
     });
     window.location.href = "/";

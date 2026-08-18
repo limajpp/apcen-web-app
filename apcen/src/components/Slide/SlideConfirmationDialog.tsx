@@ -76,7 +76,7 @@ export default function SlideConfirmationDialog({
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialogTrigger asChild>{ActionButton}</AlertDialogTrigger>
-      <AlertDialogContent className="flex flex-col justify-center items-center w-lg pt-2.5 pr-3 pb-2.25 pl-2.75">
+      <AlertDialogContent className="flex flex-col justify-center items-center w-lg p-3">
         <div className="flex flex-col items-center gap-2 shrink-0 w-122.25">
           <AlertDialogCancel className="ml-auto" asChild>
             <Button
@@ -84,12 +84,12 @@ export default function SlideConfirmationDialog({
               variant="ghost"
               size="icon"
             >
-              <CircleX className="h-4.5 w-4.5 stroke-[2px] text-[#2A59A9]" />
+              <CircleX className="h-6! w-6! stroke-[2px] text-[#2A59A9]" />
             </Button>
           </AlertDialogCancel>
           <div className="flex flex-col justify-center items-center self-stretch p-4 gap-6">
             <AlertDialogHeader>
-              <AlertDialogTitle className="font-clother text-[24px] text-[#3266BD]">
+              <AlertDialogTitle className="font-clother text-[24px] text-[#3266BD] text-center w-100">
                 {confirmationText}
               </AlertDialogTitle>
             </AlertDialogHeader>

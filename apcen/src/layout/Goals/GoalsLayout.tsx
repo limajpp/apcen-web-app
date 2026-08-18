@@ -2,9 +2,23 @@ import { useState } from "react";
 import GoalsContent from "@/components/Goals/GoalsContent";
 import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "../../components/Slide/SlideConfirmationDialog";
+import { api } from "@/services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function GoalsLayout() {
   const [selectedGoal, setSelectedGoal] = useState<string>("100");
+  const navigate = useNavigate();
+
+  const handleSetGoal = async () => {
+    try {
+      await api.patch("/user/me", {
+        goal: Number(selectedGoal),
+      });
+      navigate("/slide-analysis");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <BaseLayout className="h-full w-full">
@@ -20,13 +34,11 @@ export default function GoalsLayout() {
             </div>
             <div className="flex items-stretch justify-center">
               <SlideConfirmationDialog
-                confirmationText="Tem certeza das suas escolhas?"
+                confirmationText="Tem certeza? Essa meta só será definida uma vez."
                 cancelButtonText="Voltar"
                 actionButtonText="Confirmar"
                 disabled={selectedGoal === ""}
-                onFinish={() => {
-                  console.log("Meta confirmada:", selectedGoal);
-                }}
+                onFinish={handleSetGoal}
               />
             </div>
           </div>

@@ -16,7 +16,7 @@ interface GoalsContentProps {
 export default function GoalsContent({
   headerText = "Defina metas diárias de análise:",
   footerPrimaryText = "Sua meta é sempre dividida na sequência:",
-  footerSecondaryText = "Sempre que uma meta é atingida a seguinte é incrementada em 50%",
+  footerSecondaryText = "Sempre que uma meta é atingida, a seguinte é incrementada em 50%",
   selectedGoal,
   setSelectedGoal,
 }: GoalsContentProps) {
