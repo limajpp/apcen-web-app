@@ -3,6 +3,7 @@ import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "@/components/Slide/SlideConfirmationDialog";
 import { api } from "@/services/api";
+import useAuth from "@/hooks/useAuth";
 
 type Image = {
   id: string;
@@ -29,8 +30,9 @@ export default function SlideLayout() {
   const [imagesQueue, setImagesQueue] = useState<Image[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  const [hasConflict] = useState<boolean>(false);
+  const [goalDone, setGoalDone] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [slidesAvailable, setSlidesAvailable] = useState<boolean>(true);
   const [labelFields, setLabelFields] = useState<LabelFieldsState>({
     ganglionarValue: "hasn't",
     layers: {
@@ -39,18 +41,20 @@ export default function SlideLayout() {
       submucosa: false,
     },
   });
-
+  const { user } = useAuth();
   const totalImages = imagesQueue.length;
 
   useEffect(() => {
     async function fetchImages() {
       try {
         const response = await api.get("/image/me?page=1&limit=100");
-        const fetchedImages = response.data.images;
+        const { images, page, totalPages } = response.data;
 
-        setImagesQueue(fetchedImages);
+        setImagesQueue(images);
 
-        if (fetchedImages.length === 0) {
+        setSlidesAvailable(page < totalPages);
+
+        if (images.length === 0) {
           setIsFinished(true);
         }
       } catch (error) {
@@ -92,6 +96,11 @@ export default function SlideLayout() {
   const handleFinish = async () => {
     try {
       await saveCurrentAnalysis();
+
+      if (user.goal && currentIndex === totalImages - 1) {
+        setGoalDone(true);
+      }
+
       setIsFinished(true);
     } catch (error) {
       console.error("Failed to save final analysis", error);
@@ -121,12 +130,13 @@ export default function SlideLayout() {
             <div className="flex justify-center items-center py-4 md:py-10">
               <SlideContent
                 isFinished={isFinished}
-                hasConflict={hasConflict}
                 imageUrl={imagesQueue[currentIndex]?.url}
                 reviewedImages={currentIndex}
                 totalImages={totalImages}
                 labelFields={labelFields}
                 setLabelFields={setLabelFields}
+                goalDone={goalDone}
+                slidesAvailable={slidesAvailable}
               />
             </div>
             {!isFinished ? (

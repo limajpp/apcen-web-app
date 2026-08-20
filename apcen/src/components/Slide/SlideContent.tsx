@@ -6,22 +6,24 @@ import type { Dispatch, SetStateAction } from "react";
 
 interface SlideContentProps {
   isFinished: boolean;
-  hasConflict: boolean;
   imageUrl: string;
   reviewedImages: number;
   totalImages: number;
   labelFields: LabelFieldsState;
   setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
+  goalDone: boolean;
+  slidesAvailable: boolean;
 }
 
 export default function SlideContent({
   isFinished,
-  hasConflict,
   imageUrl,
   reviewedImages,
   totalImages,
   labelFields,
   setLabelFields,
+  goalDone,
+  slidesAvailable,
 }: SlideContentProps) {
   const { user } = useAuth();
 
@@ -30,7 +32,8 @@ export default function SlideContent({
       <SlideSessionResults
         reviewedImages={reviewedImages}
         totalImages={totalImages}
-        hasConflict={hasConflict}
+        goalDone={goalDone}
+        slidesAvailable={slidesAvailable}
       />
     );
 
