@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GoalsContent from "@/components/Goals/GoalsContent";
 import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "../../components/Slide/SlideConfirmationDialog";
 import { api } from "@/services/api";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 export default function GoalsLayout() {
   const [selectedGoal, setSelectedGoal] = useState<string>("100");
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user.goal) navigate("/slide-analysis");
+  }, []);
 
   const handleSetGoal = async () => {
     try {
