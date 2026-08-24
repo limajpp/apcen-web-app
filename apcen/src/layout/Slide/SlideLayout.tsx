@@ -26,6 +26,8 @@ export type LabelFieldsState = {
   layers: LayersState;
 };
 
+const PAGE_SIZE = 100;
+
 export default function SlideLayout() {
   const [imagesQueue, setImagesQueue] = useState<Image[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,7 +35,8 @@ export default function SlideLayout() {
   const [goalDone, setGoalDone] = useState<boolean>(false);
   const [goalNoticeSeen, setGoalNoticeSeen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [slidesAvailable, setSlidesAvailable] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [labelFields, setLabelFields] = useState<LabelFieldsState>({
     ganglionarValue: "hasn't",
     layers: {
@@ -44,19 +47,33 @@ export default function SlideLayout() {
   });
   const { user } = useAuth();
   const totalImages = imagesQueue.length;
-  const goalTarget = user.goal ? Math.min(user.goal, totalImages) : totalImages;
+  const goalTarget = user.goal ?? totalImages;
+  const hasMorePages = page < totalPages;
   const goalProgress = goalTarget > 0 ? currentIndex % goalTarget : 0;
   const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
 
+  const fetchImagesPage = async (pageToFetch: number) => {
+    const response = await api.get(
+      `/image/me?page=${pageToFetch}&limit=${PAGE_SIZE}`,
+    );
+    const {
+      images,
+      page: fetchedPage,
+      totalPages: fetchedTotalPages,
+    } = response.data;
+
+    setPage(fetchedPage);
+    setTotalPages(fetchedTotalPages);
+
+    return images as Image[];
+  };
+
   useEffect(() => {
-    async function fetchImages() {
+    async function fetchInitialImages() {
       try {
-        const response = await api.get("/image/me?page=1&limit=100");
-        const { images, page, totalPages } = response.data;
+        const images = await fetchImagesPage(1);
 
         setImagesQueue(images);
-
-        setSlidesAvailable(page < totalPages);
 
         if (images.length === 0) {
           setIsFinished(true);
@@ -67,8 +84,25 @@ export default function SlideLayout() {
         setIsLoading(false);
       }
     }
-    fetchImages();
+    fetchInitialImages();
   }, []);
+
+  const resetLabelFields = () =>
+    setLabelFields({
+      ganglionarValue: "hasn't",
+      layers: { mucosa: false, muscular: false, submucosa: false },
+    });
+
+  const markGoalIfReached = (reviewedCount: number) => {
+    if (user.goal && reviewedCount >= goalTarget) {
+      setGoalDone(true);
+    }
+  };
+
+  const advance = () => {
+    setCurrentIndex((prev) => prev + 1);
+    resetLabelFields();
+  };
 
   const saveCurrentAnalysis = async () => {
     const apiResult =
@@ -84,21 +118,24 @@ export default function SlideLayout() {
     try {
       await saveCurrentAnalysis();
 
-      const reviewedCount = currentIndex + 1;
-      const hasMoreSlides = currentIndex < totalImages - 1;
+      markGoalIfReached(currentIndex + 1);
 
-      if (user.goal && reviewedCount >= goalTarget) {
-        setGoalDone(true);
+      if (currentIndex < totalImages - 1) {
+        advance();
+        return;
       }
 
-      if (hasMoreSlides) {
-        setCurrentIndex((prev) => prev + 1);
+      if (hasMorePages) {
+        const nextImages = await fetchImagesPage(page + 1);
 
-        setLabelFields({
-          ganglionarValue: "hasn't",
-          layers: { mucosa: false, muscular: false, submucosa: false },
-        });
+        if (nextImages.length > 0) {
+          setImagesQueue((prev) => [...prev, ...nextImages]);
+          advance();
+          return;
+        }
       }
+
+      setIsFinished(true);
     } catch (error) {
       console.error("Failed to save analysis", error);
     }
@@ -108,9 +145,7 @@ export default function SlideLayout() {
     try {
       await saveCurrentAnalysis();
 
-      if (user.goal && currentIndex + 1 >= goalTarget) {
-        setGoalDone(true);
-      }
+      markGoalIfReached(currentIndex + 1);
 
       setIsFinished(true);
     } catch (error) {
@@ -120,7 +155,7 @@ export default function SlideLayout() {
 
   const handleContinueAfterGoal = () => setGoalNoticeSeen(true);
 
-  const isLastImage = currentIndex === totalImages - 1;
+  const isFinalImage = currentIndex === totalImages - 1 && !hasMorePages;
 
   if (isLoading) {
     return (
@@ -149,7 +184,6 @@ export default function SlideLayout() {
                 labelFields={labelFields}
                 setLabelFields={setLabelFields}
                 goalDone={goalDone}
-                slidesAvailable={slidesAvailable}
                 showGoalNotice={showGoalNotice}
                 onContinueAfterGoal={handleContinueAfterGoal}
               />
@@ -160,7 +194,7 @@ export default function SlideLayout() {
                   confirmationText="Deseja concluir o questionário?"
                   cancelButtonText="Cancelar"
                   actionButtonText="Finalizar"
-                  requireDialog={isLastImage}
+                  requireDialog={isFinalImage}
                   onNext={handleNext}
                   onFinish={handleFinish}
                 />

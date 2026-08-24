@@ -12,7 +12,6 @@ interface SlideContentProps {
   labelFields: LabelFieldsState;
   setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
   goalDone: boolean;
-  slidesAvailable: boolean;
   showGoalNotice: boolean;
   onContinueAfterGoal: () => void;
 }
@@ -25,7 +24,6 @@ export default function SlideContent({
   labelFields,
   setLabelFields,
   goalDone,
-  slidesAvailable,
   showGoalNotice,
   onContinueAfterGoal,
 }: SlideContentProps) {
@@ -36,7 +34,7 @@ export default function SlideContent({
       <SlideSessionResults
         isFinished={isFinished}
         goalDone={goalDone}
-        slidesAvailable={slidesAvailable}
+        userName={user?.username}
         onContinue={onContinueAfterGoal}
       />
     );
