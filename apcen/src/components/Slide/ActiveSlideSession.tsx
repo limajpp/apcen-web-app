@@ -11,8 +11,8 @@ import type { Dispatch, SetStateAction } from "react";
 interface ActiveSlideSessionProps {
   user: User;
   imageUrl: string;
-  reviewedImages: number;
-  totalImages: number;
+  goalProgress: number;
+  goalTarget: number;
   labelFields: LabelFieldsState;
   setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
 }
@@ -20,8 +20,8 @@ interface ActiveSlideSessionProps {
 export default function ActiveSlideSession({
   user,
   imageUrl,
-  reviewedImages,
-  totalImages,
+  goalProgress,
+  goalTarget,
   labelFields,
   setLabelFields,
 }: ActiveSlideSessionProps) {
@@ -33,10 +33,7 @@ export default function ActiveSlideSession({
           className="flex flex-col justify-center items-start gap-2"
           text="Identifique as opções na lâmina:"
         />
-        <ProgressBar
-          reviewedImages={reviewedImages}
-          totalImages={totalImages}
-        />
+        <ProgressBar reviewedImages={goalProgress} totalImages={goalTarget} />
         <Slide
           className="relative w-full h-98 rounded-[16px] overflow-hidden shrink-0"
           imageUrl={imageUrl}

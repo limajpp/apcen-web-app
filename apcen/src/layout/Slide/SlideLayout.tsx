@@ -31,6 +31,7 @@ export default function SlideLayout() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinished, setIsFinished] = useState<boolean>(false);
   const [goalDone, setGoalDone] = useState<boolean>(false);
+  const [goalNoticeSeen, setGoalNoticeSeen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [slidesAvailable, setSlidesAvailable] = useState<boolean>(true);
   const [labelFields, setLabelFields] = useState<LabelFieldsState>({
@@ -43,6 +44,9 @@ export default function SlideLayout() {
   });
   const { user } = useAuth();
   const totalImages = imagesQueue.length;
+  const goalTarget = user.goal ? Math.min(user.goal, totalImages) : totalImages;
+  const goalProgress = goalTarget > 0 ? currentIndex % goalTarget : 0;
+  const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
 
   useEffect(() => {
     async function fetchImages() {
@@ -80,7 +84,14 @@ export default function SlideLayout() {
     try {
       await saveCurrentAnalysis();
 
-      if (currentIndex < totalImages - 1) {
+      const reviewedCount = currentIndex + 1;
+      const hasMoreSlides = currentIndex < totalImages - 1;
+
+      if (user.goal && reviewedCount >= goalTarget) {
+        setGoalDone(true);
+      }
+
+      if (hasMoreSlides) {
         setCurrentIndex((prev) => prev + 1);
 
         setLabelFields({
@@ -97,7 +108,7 @@ export default function SlideLayout() {
     try {
       await saveCurrentAnalysis();
 
-      if (user.goal && currentIndex === totalImages - 1) {
+      if (user.goal && currentIndex + 1 >= goalTarget) {
         setGoalDone(true);
       }
 
@@ -106,6 +117,8 @@ export default function SlideLayout() {
       console.error("Failed to save final analysis", error);
     }
   };
+
+  const handleContinueAfterGoal = () => setGoalNoticeSeen(true);
 
   const isLastImage = currentIndex === totalImages - 1;
 
@@ -131,15 +144,17 @@ export default function SlideLayout() {
               <SlideContent
                 isFinished={isFinished}
                 imageUrl={imagesQueue[currentIndex]?.url}
-                reviewedImages={currentIndex}
-                totalImages={totalImages}
+                goalProgress={goalProgress}
+                goalTarget={goalTarget}
                 labelFields={labelFields}
                 setLabelFields={setLabelFields}
                 goalDone={goalDone}
                 slidesAvailable={slidesAvailable}
+                showGoalNotice={showGoalNotice}
+                onContinueAfterGoal={handleContinueAfterGoal}
               />
             </div>
-            {!isFinished ? (
+            {!isFinished && !showGoalNotice ? (
               <div className="flex items-stretch justify-center">
                 <SlideConfirmationDialog
                   confirmationText="Deseja concluir o questionário?"

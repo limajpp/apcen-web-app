@@ -7,33 +7,37 @@ import type { Dispatch, SetStateAction } from "react";
 interface SlideContentProps {
   isFinished: boolean;
   imageUrl: string;
-  reviewedImages: number;
-  totalImages: number;
+  goalProgress: number;
+  goalTarget: number;
   labelFields: LabelFieldsState;
   setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
   goalDone: boolean;
   slidesAvailable: boolean;
+  showGoalNotice: boolean;
+  onContinueAfterGoal: () => void;
 }
 
 export default function SlideContent({
   isFinished,
   imageUrl,
-  reviewedImages,
-  totalImages,
+  goalProgress,
+  goalTarget,
   labelFields,
   setLabelFields,
   goalDone,
   slidesAvailable,
+  showGoalNotice,
+  onContinueAfterGoal,
 }: SlideContentProps) {
   const { user } = useAuth();
 
-  if (isFinished)
+  if (isFinished || showGoalNotice)
     return (
       <SlideSessionResults
-        reviewedImages={reviewedImages}
-        totalImages={totalImages}
+        isFinished={isFinished}
         goalDone={goalDone}
         slidesAvailable={slidesAvailable}
+        onContinue={onContinueAfterGoal}
       />
     );
 
@@ -41,8 +45,8 @@ export default function SlideContent({
     <ActiveSlideSession
       user={user}
       imageUrl={imageUrl}
-      reviewedImages={reviewedImages}
-      totalImages={totalImages}
+      goalProgress={goalProgress}
+      goalTarget={goalTarget}
       labelFields={labelFields}
       setLabelFields={setLabelFields}
     />

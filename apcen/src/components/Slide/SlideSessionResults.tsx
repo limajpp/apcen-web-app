@@ -2,21 +2,21 @@ import ProgressBar from "../ProgressBar";
 import checkBigSvg from "@/assets/Check_Big.svg";
 
 interface SlideSessionResultsProps {
+  isFinished: boolean;
   goalDone: boolean;
-  reviewedImages: number;
-  totalImages: number;
   slidesAvailable: boolean;
+  onContinue?: () => void;
 }
 
 export default function SlideSessionResults({
-  reviewedImages,
-  totalImages,
+  isFinished,
   goalDone,
   slidesAvailable,
+  onContinue,
 }: SlideSessionResultsProps) {
-  const isGoalMetAndNoSlides = goalDone && !slidesAvailable;
-
-  console.log(goalDone, slidesAvailable);
+  const isGoalPause = goalDone && !isFinished;
+  const isGoalMetAndNoSlides = isFinished && goalDone && !slidesAvailable;
+  const isGoalMet = isGoalPause || isGoalMetAndNoSlides;
 
   return (
     <div className="flex flex-col items-center w-fit gap-6">
@@ -26,18 +26,23 @@ export default function SlideSessionResults({
       <div className="flex flex-col items-center gap-8 self-stretch">
         <div className="flex flex-col items-center w-full max-w-lg gap-6">
           <h2 className="font-clother text-[24px] text-[#3266BD]">
-            {isGoalMetAndNoSlides
+            {isGoalMet
               ? "Meta diária atingida com sucesso!"
               : "Questionário finalizado com sucesso!"}
           </h2>
-          {!isGoalMetAndNoSlides && (
-            <ProgressBar
-              reviewedImages={reviewedImages}
-              totalImages={totalImages}
-              isFullyFilled
-            />
-          )}
+          {!isGoalMet && <ProgressBar isFullyFilled />}
         </div>
+        {isGoalPause && (
+          <div className="flex flex-col items-center w-fit">
+            <button
+              type="button"
+              onClick={onContinue}
+              className="font-clother text-[18px] text-[#2A59A9] underline whitespace-nowrap cursor-pointer"
+            >
+              Clique aqui para adiantar a próxima meta
+            </button>
+          </div>
+        )}
         {isGoalMetAndNoSlides && (
           <div className="flex flex-col items-center w-fit gap-2 text-center">
             <h3 className="font-clother text-[18px] text-[#2A59A9]">
