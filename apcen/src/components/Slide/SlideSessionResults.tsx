@@ -3,7 +3,7 @@ import checkBigSvg from "@/assets/Check_Big.svg";
 interface SlideSessionResultsProps {
   isFinished: boolean;
   goalDone: boolean;
-  userName: string;
+  userName: string | undefined;
   onContinue?: () => void;
 }
 
@@ -40,7 +40,7 @@ export default function SlideSessionResults({
       ) : (
         <div className="flex flex-col items-center text-center w-102 gap-6">
           <h2 className="font-clother text-[24px] text-[#3266BD] font-bold">
-            Parabéns, {userName}!
+            Parabéns, {userName ? userName : "Usuário"}!
           </h2>
           <p className="font-clother text-[24px] text-[#3266BD]">
             Todas as análises foram finalizadas com sucesso!

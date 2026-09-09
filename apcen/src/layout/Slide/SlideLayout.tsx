@@ -47,7 +47,7 @@ export default function SlideLayout() {
   });
   const { user } = useAuth();
   const totalImages = imagesQueue.length;
-  const goalTarget = user.goal ?? totalImages;
+  const goalTarget = user?.goal ?? totalImages;
   const hasMorePages = page < totalPages;
   const goalProgress = goalTarget > 0 ? currentIndex % goalTarget : 0;
   const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
@@ -94,7 +94,7 @@ export default function SlideLayout() {
     });
 
   const markGoalIfReached = (reviewedCount: number) => {
-    if (user.goal && reviewedCount >= goalTarget) {
+    if (user && user.goal && reviewedCount >= goalTarget) {
       setGoalDone(true);
     }
   };

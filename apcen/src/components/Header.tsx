@@ -1,5 +1,5 @@
 interface HeaderProps {
-  userName: string;
+  userName: string | undefined;
   className?: string;
   text: string;
 }
@@ -12,7 +12,7 @@ export default function Header({
   return (
     <div className={className}>
       <h2 className="text-[#2A59A9] font-clother text-2xl font-bold">
-        {`Olá, ${userName}!`}
+        {`Olá, ${userName ? userName : "Usuário"}!`}
       </h2>
       <p className="text-[#2A59A9] font-clother text-[18px]">{text}</p>
     </div>

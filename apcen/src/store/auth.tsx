@@ -1,20 +1,19 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
-import { api } from "@/services/api";
+import { createContext, useState, type ReactNode } from "react";
 
-export interface User {
-  id: string;
-  username: string;
-  role: "" | "analyst" | "admin";
-  goal: number | null;
-  createdAt: string;
-}
+import {
+  clearStoredTokens,
+  decodeUserFromToken,
+  loadStoredUser,
+  storeTokens,
+} from "@/lib/jwt/jwt";
+
+import { type User } from "@/lib/jwt/jwt.types";
 
 type AuthContextType = {
-  user: User;
+  user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (accessToken: string, refreshToken: string) => Promise<void>;
-  logout: () => void;
+  handleSetUser: (accessToken: string, refreshToken: string) => void;
+  handleDisconnectUser: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -22,57 +21,28 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>({
-    id: "",
-    username: "",
-    role: "",
-    goal: null,
-    createdAt: "",
+  const [user, setUser] = useState<User | null>(() => {
+    const result = loadStoredUser();
+    return result.ok ? result.returned : null;
   });
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadStorageData = async () => {
-      const token = localStorage.getItem("@App:token");
+  const handleSetUser = (accessToken: string, refreshToken: string) => {
+    storeTokens(accessToken, refreshToken);
 
-      if (token) {
-        try {
-          const response = await api.get("/user/me");
-          setUser(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      setIsLoading(false);
-    };
+    const result = decodeUserFromToken(accessToken);
 
-    loadStorageData();
-  }, []);
-
-  const login = async (accessToken: string, refreshToken: string) => {
-    localStorage.setItem("@App:token", accessToken);
-    localStorage.setItem("@App:refreshToken", refreshToken);
-
-    try {
-      const response = await api.get("/user/me");
-      setUser(response.data);
-    } catch (error) {
-      localStorage.removeItem("@App:token");
-      localStorage.removeItem("@App:refreshToken");
-      throw error;
+    if (!result.ok) {
+      clearStoredTokens();
+      setUser(null);
+      return;
     }
+
+    setUser(result.returned);
   };
 
-  const logout = () => {
-    localStorage.removeItem("@App:token");
-    localStorage.removeItem("@App:refreshToken");
-    setUser({
-      id: "",
-      username: "",
-      role: "",
-      goal: null,
-      createdAt: "",
-    });
+  const handleDisconnectUser = () => {
+    clearStoredTokens();
+    setUser(null);
     window.location.href = "/";
   };
 
@@ -80,10 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        logout,
+        isAuthenticated: user !== null,
+        handleSetUser,
+        handleDisconnectUser,
       }}
     >
       {children}

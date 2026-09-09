@@ -4,12 +4,12 @@ import Header from "../Header";
 import SlideLabeling from "./SlideLabel/SlideLabeling";
 
 import { Card } from "@/components/ui/card";
-import type { User } from "@/store/auth";
+import { type User } from "@/lib/jwt/jwt.types";
 import type { LabelFieldsState } from "@/layout/Slide/SlideLayout";
 import type { Dispatch, SetStateAction } from "react";
 
 interface ActiveSlideSessionProps {
-  user: User;
+  user: User | null;
   imageUrl: string;
   goalProgress: number;
   goalTarget: number;

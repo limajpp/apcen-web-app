@@ -12,7 +12,7 @@ export default function GoalsLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user.goal) navigate("/slide-analysis");
+    if (user && user.goal) navigate("/slide-analysis");
   }, []);
 
   const handleSetGoal = async () => {

@@ -21,7 +21,7 @@ export type LoginFeedback = {
 };
 
 export default function AuthContent() {
-  const { login, user } = useAuth();
+  const { handleSetUser, user } = useAuth();
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState<LoginFeedback>({
     type: "idle",
@@ -34,13 +34,13 @@ export default function AuthContent() {
   useEffect(() => {
     if (feedback.type !== "success") return;
 
-    if (!user.goal) {
+    if (user && !user.goal) {
       navigate("/goals");
       return;
     }
 
     navigate("/slide-analysis");
-  }, [feedback.type, navigate]);
+  }, [feedback.type, user, navigate]);
 
   useEffect(() => {
     if (feedback.type !== "error") return;
@@ -62,7 +62,7 @@ export default function AuthContent() {
         username: credentials.name,
         password: credentials.password,
       });
-      await login(response.data.accessToken, response.data.refreshToken);
+      handleSetUser(response.data.accessToken, response.data.refreshToken);
       setFeedback({
         type: "success",
         message: "",
