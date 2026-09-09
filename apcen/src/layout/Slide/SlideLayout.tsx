@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "@/components/Slide/SlideConfirmationDialog";
-import { api } from "@/services/api";
+import { api, buildImagePreviewUrl } from "@/services/api";
 import useAuth from "@/hooks/useAuth";
 
 type Image = {
   id: string;
   blade: string;
-  url: string;
+  storageKey: string;
   hasConflict: boolean;
   createdAt: string;
 };
@@ -178,7 +178,11 @@ export default function SlideLayout() {
             <div className="flex justify-center items-center py-4 md:py-10">
               <SlideContent
                 isFinished={isFinished}
-                imageUrl={imagesQueue[currentIndex]?.url}
+                imageUrl={
+                  imagesQueue[currentIndex]
+                    ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
+                    : ""
+                }
                 goalProgress={goalProgress}
                 goalTarget={goalTarget}
                 labelFields={labelFields}

@@ -18,6 +18,12 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
 
     useEffect(() => {
       if (!containerRef.current) return;
+      if (!imageUrl) {
+        console.error(
+          "No image url to open. The image list response is missing a usable storageKey.",
+        );
+        return;
+      }
 
       const viewer = OpenSeadragon({
         element: containerRef.current,
@@ -41,6 +47,12 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
       });
 
       viewerRef.current = viewer;
+      viewer.addHandler("open-failed", (event) => {
+        console.error("Failed to open slide image.", {
+          imageUrl,
+          message: (event as unknown as { message?: string }).message,
+        });
+      });
       viewer.addHandler("open", () => {
         const viewport = viewer.viewport as OpenSeadragon.Viewport & {
           minZoomLevel: number;

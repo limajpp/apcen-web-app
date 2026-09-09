@@ -16,6 +16,9 @@ export const api: AxiosInstance = axios.create({
   timeout: 10000,
 });
 
+export const buildImagePreviewUrl = (storageKey: string): string =>
+  `${API_URL}image/${encodeURIComponent(storageKey)}/redirect`;
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
