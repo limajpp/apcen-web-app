@@ -23,6 +23,19 @@ type Image = {
 
 const PAGE_SIZE = 100;
 
+/**
+ * Progress within the current goal cycle.
+ *
+ * A plain `count % target` collapses to 0 at exactly the target, emptying the
+ * bar at the moment it should read full. Multiples of the target report as a
+ * complete cycle instead.
+ */
+function cycleProgress(count: number, target: number) {
+  if (target <= 0) return 0;
+  const remainder = count % target;
+  return remainder === 0 && count > 0 ? target : remainder;
+}
+
 export default function SlideLayout() {
   const [imagesQueue, setImagesQueue] = useState<Image[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -37,11 +50,26 @@ export default function SlideLayout() {
   const [highlightedFieldId, setHighlightedFieldId] = useState<string | null>(
     null,
   );
+  // Counts submitted analyses. Derived from `currentIndex` previously, which
+  // undercounted by one because the final slide never advances the index.
+  const [reviewedCount, setReviewedCount] = useState<number>(0);
   const { user } = useAuth();
   const totalImages = imagesQueue.length;
-  const goalTarget = user?.goal ?? totalImages;
   const hasMorePages = page < totalPages;
-  const goalProgress = goalTarget > 0 ? currentIndex % goalTarget : 0;
+  /** The analyst's daily quota — drives the "meta atingida" notice. */
+  const dailyGoal = user?.goal ?? totalImages;
+  /**
+   * What the bar measures. When the API reports a single page, the loaded queue
+   * is everything available, so a larger daily goal is unreachable this session
+   * and would leave the bar looking stuck near empty. Cap it at what can
+   * actually be done. The notice keeps using `dailyGoal`, so finishing a short
+   * queue fills the bar without falsely claiming the daily goal was met.
+   */
+  const goalTarget =
+    totalPages <= 1 && totalImages > 0
+      ? Math.min(dailyGoal, totalImages)
+      : dailyGoal;
+  const goalProgress = cycleProgress(reviewedCount, goalTarget);
   const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
   const formComplete = isComplete(labelFields);
 
@@ -99,10 +127,17 @@ export default function SlideLayout() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const markGoalIfReached = (reviewedCount: number) => {
-    if (user && user.goal && reviewedCount >= goalTarget) {
+  const markGoalIfReached = (reviewed: number) => {
+    if (user && user.goal && reviewed >= dailyGoal) {
       setGoalDone(true);
     }
+  };
+
+  /** Records a submitted analysis and reports the new total. */
+  const countReviewed = () => {
+    const reviewed = reviewedCount + 1;
+    setReviewedCount(reviewed);
+    return reviewed;
   };
 
   const advance = () => {
@@ -126,7 +161,7 @@ export default function SlideLayout() {
     try {
       await saveCurrentAnalysis();
 
-      markGoalIfReached(currentIndex + 1);
+      markGoalIfReached(countReviewed());
 
       if (currentIndex < totalImages - 1) {
         advance();
@@ -158,7 +193,7 @@ export default function SlideLayout() {
     try {
       await saveCurrentAnalysis();
 
-      markGoalIfReached(currentIndex + 1);
+      markGoalIfReached(countReviewed());
 
       setIsFinished(true);
     } catch (error) {
