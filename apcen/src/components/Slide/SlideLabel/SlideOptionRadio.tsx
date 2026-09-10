@@ -18,7 +18,7 @@ export function SlideOptionRadio({
 }: SlideOptionRadioProps) {
   return (
     <Label
-      className="flex flex-row justify-start items-center min-w-33.5 pr-4 h-12 py-2 px-4 gap-3 rounded-[8px] bg-[#2A59A9] cursor-pointer"
+      className="flex flex-row justify-start items-center min-w-33.5 pr-4 h-12 py-2 px-4 gap-3 rounded-[8px] bg-[#2A59A9] cursor-pointer transition-shadow has-data-[state=checked]:ring-2 has-data-[state=checked]:ring-[#F9F3EA] has-data-[state=checked]:ring-offset-2 has-data-[state=checked]:ring-offset-[#F9F3EA]/0"
       htmlFor={id}
     >
       <RadioGroupItem
