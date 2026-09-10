@@ -35,7 +35,7 @@ export const patchAdequacyLabels: Record<PatchAdequacy, string> = {
 export const structureLabels: Record<Structure, string> = {
   mucosa: "Mucosa",
   muscularis_mucosae: "Muscular da mucosa",
-  submocosa: "Submucosa",
+  submucosa: "Submucosa",
   muscularis_propria: "Muscular própria",
   serous: "Serosa",
 };

@@ -31,7 +31,7 @@ export const analysisFields: readonly FieldDescriptor[] = [
     options: [
       "mucosa",
       "muscularis_mucosae",
-      "submocosa",
+      "submucosa",
       "muscularis_propria",
       "serous",
     ],

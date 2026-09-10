@@ -27,7 +27,7 @@ export type ArtifactSeverity = "no_interference" | "interference";
 export type Structure =
   | "mucosa"
   | "muscularis_mucosae"
-  | "submocosa"
+  | "submucosa"
   | "muscularis_propria"
   | "serous";
 
