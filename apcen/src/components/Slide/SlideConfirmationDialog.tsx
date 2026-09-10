@@ -19,6 +19,7 @@ interface SlideConfirmationDialogProps {
   cancelButtonText: string;
   requireDialog?: boolean;
   disabled?: boolean;
+  blocked?: boolean;
   onNext?: () => void;
   onFinish?: () => void;
 }
@@ -29,6 +30,7 @@ export default function SlideConfirmationDialog({
   cancelButtonText,
   requireDialog = true,
   disabled = false,
+  blocked = false,
   onNext,
   onFinish,
 }: SlideConfirmationDialogProps) {
@@ -63,15 +65,15 @@ export default function SlideConfirmationDialog({
       variant="ghost"
       disabled={disabled}
       className={`flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none shrink-0 p-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:outline-none ${
-        disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
-      }`}
-      onClick={!requireDialog ? onNext : undefined}
+        disabled || blocked ? "opacity-30" : ""
+      } ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+      onClick={!requireDialog || blocked ? onNext : undefined}
     >
       <img src={chevronRight} alt="" />
     </Button>
   );
 
-  if (!requireDialog) return ActionButton;
+  if (!requireDialog || blocked) return ActionButton;
 
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

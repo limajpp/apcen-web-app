@@ -5,7 +5,7 @@ import SlideLabeling from "./SlideLabel/SlideLabeling";
 
 import { Card } from "@/components/ui/card";
 import { type User } from "@/lib/jwt/jwt.types";
-import type { LabelFieldsState } from "@/layout/Slide/SlideLayout";
+import type { AnalysisResultState } from "@/lib/analysis/types";
 import type { Dispatch, SetStateAction } from "react";
 
 interface ActiveSlideSessionProps {
@@ -13,8 +13,9 @@ interface ActiveSlideSessionProps {
   imageUrl: string;
   goalProgress: number;
   goalTarget: number;
-  labelFields: LabelFieldsState;
-  setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
+  labelFields: AnalysisResultState;
+  setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
+  highlightedFieldId: string | null;
 }
 
 export default function ActiveSlideSession({
@@ -24,16 +25,19 @@ export default function ActiveSlideSession({
   goalTarget,
   labelFields,
   setLabelFields,
+  highlightedFieldId,
 }: ActiveSlideSessionProps) {
   return (
     <div className="flex flex-row items-center">
-      <Card className="bg-transparent ring-0 flex flex-col w-full max-w-lg gap-6 border-none shadow-none p-0">
+      <Card className="bg-transparent ring-0 flex flex-col w-full max-w-lg gap-6 border-none shadow-none p-0 overflow-visible">
         <Header
           userName={user?.username}
-          className="flex flex-col justify-center items-start gap-2"
+          className="flex flex-col justify-center items-start gap-2 shrink-0"
           text="Identifique as opções na lâmina:"
         />
-        <ProgressBar reviewedImages={goalProgress} totalImages={goalTarget} />
+        <div className="shrink-0 w-full">
+          <ProgressBar reviewedImages={goalProgress} totalImages={goalTarget} />
+        </div>
         <Slide
           className="relative w-full h-98 rounded-[16px] overflow-hidden shrink-0"
           imageUrl={imageUrl}
@@ -41,6 +45,7 @@ export default function ActiveSlideSession({
         <SlideLabeling
           labelFields={labelFields}
           setLabelFields={setLabelFields}
+          highlightedFieldId={highlightedFieldId}
         />
       </Card>
     </div>

@@ -1,100 +1,49 @@
 import { Card } from "../../ui/card";
-import { RadioGroup } from "../../ui/radio-group";
-import { SlideOptionRadio } from "./SlideOptionRadio";
-import { SlideOptionCheckbox } from "./SlideOptionCheckbox";
-import type {
-  GanglionarState,
-  LabelFieldsState,
-  LayersState,
-} from "@/layout/Slide/SlideLayout";
+import SlideFieldSection from "./SlideFieldSection";
+import { analysisFields, totalFields } from "@/lib/analysis/fields";
+import { uiCopy } from "@/lib/analysis/labels";
+import { answeredCount } from "@/lib/analysis/validation";
+import type { AnalysisResultState } from "@/lib/analysis/types";
 import type { Dispatch, SetStateAction } from "react";
 
 interface SlideLabelingProps {
-  labelFields: LabelFieldsState;
-  setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
+  labelFields: AnalysisResultState;
+  setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
+  highlightedFieldId: string | null;
 }
 
 export default function SlideLabeling({
   labelFields,
   setLabelFields,
+  highlightedFieldId,
 }: SlideLabelingProps) {
-  const handleRadioToggle = (value: GanglionarState) => {
-    if (labelFields.ganglionarValue === value) {
-      setLabelFields((prev) => ({
-        ...prev,
-        ganglionarValue: "hasn't",
-      }));
-    } else {
-      setLabelFields((prev) => ({
-        ...prev,
-        ganglionarValue: value,
-      }));
-    }
-  };
-
-  const handleCheckboxToggle = (id: keyof LayersState) => {
-    setLabelFields((prev) => ({
-      ...prev,
-      layers: {
-        ...prev.layers,
-        [id]: !prev.layers[id],
-      },
-    }));
-  };
+  const answered = answeredCount(labelFields);
 
   return (
-    <Card className="bg-transparent ring-0 flex flex-col w-full rounded-none gap-8 shadow-none p-0">
-      <h3 className="font-clother text-[18px] text-[#2A59A9]">
-        Selecione as opções corretas:
-      </h3>
-      <div className="flex flex-col items-start gap-4 w-full">
-        <h4 className="font-clother text-[16px] text-[#2A59A9]">
-          Tem célula ganglionar?
-        </h4>
-        <RadioGroup className="flex flex-row flex-wrap gap-4 w-full">
-          <SlideOptionRadio
-            id="has"
-            value="has"
-            letter="X"
-            label="Tem"
-            onClick={() => handleRadioToggle("has")}
-          />
-          <SlideOptionRadio
-            id="hasn't"
-            value="hasn't"
-            letter="Y"
-            label="Não tem"
-            onClick={() => handleRadioToggle("hasn't")}
-          />
-        </RadioGroup>
+    <Card className="bg-transparent ring-0 flex flex-col w-full rounded-none gap-3 shadow-none p-0 overflow-visible">
+      <div className="flex flex-row items-baseline justify-between w-full">
+        <h3 className="font-clother text-[18px] text-[#2A59A9]">
+          {uiCopy.heading}
+        </h3>
+        <span
+          className={`font-clother text-[14px] ${
+            answered === totalFields ? "text-[#2A59A9]" : "text-[#2A59A9]/60"
+          }`}
+        >
+          {uiCopy.answeredCounter(answered, totalFields)}
+        </span>
       </div>
-      <div className="flex flex-col items-start gap-4 w-full">
-        <h4 className="font-clother text-[16px] text-[#2A59A9]">
-          Quais camadas aparecem?
-        </h4>
-        <div className="flex flex-row flex-wrap gap-4 w-full">
-          <SlideOptionCheckbox
-            id="mucosa"
-            letter="A"
-            label="Mucosa"
-            checked={labelFields.layers.mucosa}
-            onClick={() => handleCheckboxToggle("mucosa")}
+      <div className="h-72 w-full overflow-y-auto scrollbar-hide snap-y snap-mandatory flex flex-col">
+        {analysisFields.map((field, index) => (
+          <SlideFieldSection
+            key={field.id}
+            field={field}
+            index={index}
+            state={labelFields}
+            setState={setLabelFields}
+            highlighted={highlightedFieldId === field.id}
           />
-          <SlideOptionCheckbox
-            id="muscular"
-            letter="B"
-            label="Muscular"
-            checked={labelFields.layers.muscular}
-            onClick={() => handleCheckboxToggle("muscular")}
-          />
-          <SlideOptionCheckbox
-            id="submucosa"
-            letter="C"
-            label="Submucosa"
-            checked={labelFields.layers.submucosa}
-            onClick={() => handleCheckboxToggle("submucosa")}
-          />
-        </div>
+        ))}
       </div>
     </Card>
   );

@@ -1,7 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import ActiveSlideSession from "./ActiveSlideSession";
 import SlideSessionResults from "./SlideSessionResults";
-import type { LabelFieldsState } from "@/layout/Slide/SlideLayout";
+import type { AnalysisResultState } from "@/lib/analysis/types";
 import type { Dispatch, SetStateAction } from "react";
 
 interface SlideContentProps {
@@ -9,8 +9,9 @@ interface SlideContentProps {
   imageUrl: string;
   goalProgress: number;
   goalTarget: number;
-  labelFields: LabelFieldsState;
-  setLabelFields: Dispatch<SetStateAction<LabelFieldsState>>;
+  labelFields: AnalysisResultState;
+  setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
+  highlightedFieldId: string | null;
   goalDone: boolean;
   showGoalNotice: boolean;
   onContinueAfterGoal: () => void;
@@ -26,6 +27,7 @@ export default function SlideContent({
   goalDone,
   showGoalNotice,
   onContinueAfterGoal,
+  highlightedFieldId,
 }: SlideContentProps) {
   const { user } = useAuth();
 
@@ -47,6 +49,7 @@ export default function SlideContent({
       goalTarget={goalTarget}
       labelFields={labelFields}
       setLabelFields={setLabelFields}
+      highlightedFieldId={highlightedFieldId}
     />
   );
 }

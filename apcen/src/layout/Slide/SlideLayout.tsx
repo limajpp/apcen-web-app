@@ -4,6 +4,14 @@ import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "@/components/Slide/SlideConfirmationDialog";
 import { api, buildImagePreviewUrl } from "@/services/api";
 import useAuth from "@/hooks/useAuth";
+import { emptyAnalysisResult } from "@/lib/analysis/types";
+import type { AnalysisResultState } from "@/lib/analysis/types";
+import { fieldSectionId } from "@/lib/analysis/fields";
+import {
+  getFirstIncompleteFieldId,
+  isComplete,
+  toCreateResultPayload,
+} from "@/lib/analysis/validation";
 
 type Image = {
   id: string;
@@ -11,19 +19,6 @@ type Image = {
   storageKey: string;
   hasConflict: boolean;
   createdAt: string;
-};
-
-export type GanglionarState = "has" | "hasn't";
-
-export type LayersState = {
-  mucosa: boolean;
-  muscular: boolean;
-  submucosa: boolean;
-};
-
-export type LabelFieldsState = {
-  ganglionarValue: GanglionarState;
-  layers: LayersState;
 };
 
 const PAGE_SIZE = 100;
@@ -37,20 +32,18 @@ export default function SlideLayout() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [labelFields, setLabelFields] = useState<LabelFieldsState>({
-    ganglionarValue: "hasn't",
-    layers: {
-      mucosa: false,
-      muscular: false,
-      submucosa: false,
-    },
-  });
+  const [labelFields, setLabelFields] =
+    useState<AnalysisResultState>(emptyAnalysisResult);
+  const [highlightedFieldId, setHighlightedFieldId] = useState<string | null>(
+    null,
+  );
   const { user } = useAuth();
   const totalImages = imagesQueue.length;
   const goalTarget = user?.goal ?? totalImages;
   const hasMorePages = page < totalPages;
   const goalProgress = goalTarget > 0 ? currentIndex % goalTarget : 0;
   const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
+  const formComplete = isComplete(labelFields);
 
   const fetchImagesPage = async (pageToFetch: number) => {
     const response = await api.get(
@@ -87,11 +80,24 @@ export default function SlideLayout() {
     fetchInitialImages();
   }, []);
 
-  const resetLabelFields = () =>
-    setLabelFields({
-      ganglionarValue: "hasn't",
-      layers: { mucosa: false, muscular: false, submucosa: false },
-    });
+  const resetLabelFields = () => {
+    setLabelFields(emptyAnalysisResult);
+    setHighlightedFieldId(null);
+  };
+
+  /**
+   * All ten fields are required by the API. Rather than let a partial payload
+   * 400, scroll the analyst to the first gap and mark it.
+   */
+  const focusFirstIncompleteField = () => {
+    const fieldId = getFirstIncompleteFieldId(labelFields);
+    if (!fieldId) return;
+
+    setHighlightedFieldId(fieldId);
+    document
+      .getElementById(fieldSectionId(fieldId))
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const markGoalIfReached = (reviewedCount: number) => {
     if (user && user.goal && reviewedCount >= goalTarget) {
@@ -105,16 +111,18 @@ export default function SlideLayout() {
   };
 
   const saveCurrentAnalysis = async () => {
-    const apiResult =
-      labelFields.ganglionarValue === "has" ? "healthy" : "sickness";
-
     await api.post("/analysis", {
       imageId: imagesQueue[currentIndex].id,
-      result: apiResult,
+      result: toCreateResultPayload(labelFields),
     });
   };
 
   const handleNext = async () => {
+    if (!isComplete(labelFields)) {
+      focusFirstIncompleteField();
+      return;
+    }
+
     try {
       await saveCurrentAnalysis();
 
@@ -142,6 +150,11 @@ export default function SlideLayout() {
   };
 
   const handleFinish = async () => {
+    if (!isComplete(labelFields)) {
+      focusFirstIncompleteField();
+      return;
+    }
+
     try {
       await saveCurrentAnalysis();
 
@@ -183,6 +196,7 @@ export default function SlideLayout() {
                     ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
                     : ""
                 }
+                highlightedFieldId={highlightedFieldId}
                 goalProgress={goalProgress}
                 goalTarget={goalTarget}
                 labelFields={labelFields}
@@ -199,6 +213,7 @@ export default function SlideLayout() {
                   cancelButtonText="Cancelar"
                   actionButtonText="Finalizar"
                   requireDialog={isFinalImage}
+                  blocked={!formComplete}
                   onNext={handleNext}
                   onFinish={handleFinish}
                 />
