@@ -19,6 +19,41 @@ export const api: AxiosInstance = axios.create({
 export const buildImagePreviewUrl = (storageKey: string): string =>
   `${API_URL}image/${encodeURIComponent(storageKey)}/redirect`;
 
+export type SlideQueueImage = {
+  id: string;
+  blade: string;
+  storageKey: string;
+  hasConflict: boolean;
+  createdAt: string;
+};
+
+export type SlideQueuePage = {
+  images: SlideQueueImage[];
+  page: number;
+  totalPages: number;
+};
+
+export async function fetchSlideQueue(
+  isAdmin: boolean,
+  page: number,
+  limit: number,
+): Promise<SlideQueuePage> {
+  if (isAdmin) {
+    const { data } = await api.get<SlideQueueImage[]>("/image/conflict");
+    return { images: data, page: 1, totalPages: 1 };
+  }
+
+  const { data } = await api.get<SlideQueuePage & { limit: number }>(
+    `/image/me?page=${page}&limit=${limit}`,
+  );
+
+  return {
+    images: data.images,
+    page: data.page,
+    totalPages: data.totalPages,
+  };
+}
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;

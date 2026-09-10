@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "@/components/Slide/SlideConfirmationDialog";
-import { api, buildImagePreviewUrl } from "@/services/api";
+import {
+  api,
+  buildImagePreviewUrl,
+  fetchSlideQueue,
+  type SlideQueueImage,
+} from "@/services/api";
 import useAuth from "@/hooks/useAuth";
 import { emptyAnalysisResult } from "@/lib/analysis/types";
 import type { AnalysisResultState } from "@/lib/analysis/types";
@@ -13,13 +18,7 @@ import {
   toCreateResultPayload,
 } from "@/lib/analysis/validation";
 
-type Image = {
-  id: string;
-  blade: string;
-  storageKey: string;
-  hasConflict: boolean;
-  createdAt: string;
-};
+type Image = SlideQueueImage;
 
 const PAGE_SIZE = 100;
 
@@ -45,6 +44,7 @@ export default function SlideLayout() {
   );
   const [reviewedCount, setReviewedCount] = useState<number>(0);
   const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const totalImages = imagesQueue.length;
   const hasMorePages = page < totalPages;
   const dailyGoal = user?.goal ?? totalImages;
@@ -57,26 +57,23 @@ export default function SlideLayout() {
   const formComplete = isComplete(labelFields);
 
   const fetchImagesPage = async (pageToFetch: number) => {
-    const response = await api.get(
-      `/image/me?page=${pageToFetch}&limit=${PAGE_SIZE}`,
-    );
-    const {
-      images,
-      page: fetchedPage,
-      totalPages: fetchedTotalPages,
-    } = response.data;
+    const { images, page: fetchedPage, totalPages: fetchedTotalPages } =
+      await fetchSlideQueue(isAdmin, pageToFetch, PAGE_SIZE);
 
     setPage(fetchedPage);
     setTotalPages(fetchedTotalPages);
 
-    return images as Image[];
+    return images;
   };
 
   useEffect(() => {
     async function fetchInitialImages() {
       try {
-        const images = await fetchImagesPage(1);
+        const { images, page: fetchedPage, totalPages: fetchedTotalPages } =
+          await fetchSlideQueue(isAdmin, 1, PAGE_SIZE);
 
+        setPage(fetchedPage);
+        setTotalPages(fetchedTotalPages);
         setImagesQueue(images);
 
         if (images.length === 0) {
@@ -89,7 +86,7 @@ export default function SlideLayout() {
       }
     }
     fetchInitialImages();
-  }, []);
+  }, [isAdmin]);
 
   const resetLabelFields = () => {
     setLabelFields(emptyAnalysisResult);
@@ -123,8 +120,8 @@ export default function SlideLayout() {
     resetLabelFields();
   };
 
-  const saveCurrentAnalysis = async () => {
-    await api.post("/analysis", {
+  const submitCurrentSlide = async () => {
+    await api.post(isAdmin ? "/verdict" : "/analysis", {
       imageId: imagesQueue[currentIndex].id,
       result: toCreateResultPayload(labelFields),
     });
@@ -137,7 +134,7 @@ export default function SlideLayout() {
     }
 
     try {
-      await saveCurrentAnalysis();
+      await submitCurrentSlide();
 
       markGoalIfReached(countReviewed());
 
@@ -169,7 +166,7 @@ export default function SlideLayout() {
     }
 
     try {
-      await saveCurrentAnalysis();
+      await submitCurrentSlide();
 
       markGoalIfReached(countReviewed());
 
