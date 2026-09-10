@@ -23,13 +23,6 @@ type Image = {
 
 const PAGE_SIZE = 100;
 
-/**
- * Progress within the current goal cycle.
- *
- * A plain `count % target` collapses to 0 at exactly the target, emptying the
- * bar at the moment it should read full. Multiples of the target report as a
- * complete cycle instead.
- */
 function cycleProgress(count: number, target: number) {
   if (target <= 0) return 0;
   const remainder = count % target;
@@ -50,21 +43,11 @@ export default function SlideLayout() {
   const [highlightedFieldId, setHighlightedFieldId] = useState<string | null>(
     null,
   );
-  // Counts submitted analyses. Derived from `currentIndex` previously, which
-  // undercounted by one because the final slide never advances the index.
   const [reviewedCount, setReviewedCount] = useState<number>(0);
   const { user } = useAuth();
   const totalImages = imagesQueue.length;
   const hasMorePages = page < totalPages;
-  /** The analyst's daily quota — drives the "meta atingida" notice. */
   const dailyGoal = user?.goal ?? totalImages;
-  /**
-   * What the bar measures. When the API reports a single page, the loaded queue
-   * is everything available, so a larger daily goal is unreachable this session
-   * and would leave the bar looking stuck near empty. Cap it at what can
-   * actually be done. The notice keeps using `dailyGoal`, so finishing a short
-   * queue fills the bar without falsely claiming the daily goal was met.
-   */
   const goalTarget =
     totalPages <= 1 && totalImages > 0
       ? Math.min(dailyGoal, totalImages)
@@ -113,10 +96,6 @@ export default function SlideLayout() {
     setHighlightedFieldId(null);
   };
 
-  /**
-   * All ten fields are required by the API. Rather than let a partial payload
-   * 400, scroll the analyst to the first gap and mark it.
-   */
   const focusFirstIncompleteField = () => {
     const fieldId = getFirstIncompleteFieldId(labelFields);
     if (!fieldId) return;
@@ -133,7 +112,6 @@ export default function SlideLayout() {
     }
   };
 
-  /** Records a submitted analysis and reports the new total. */
   const countReviewed = () => {
     const reviewed = reviewedCount + 1;
     setReviewedCount(reviewed);
