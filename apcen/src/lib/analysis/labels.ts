@@ -10,6 +10,7 @@ import type {
   Structure,
   TechnicalArtifact,
 } from "./types";
+import type { ProgressStage } from "./progress";
 
 export const fieldTitles = {
   patchAdequacy: "A amostra está adequada?",
@@ -143,6 +144,14 @@ export const noneOptionLabels: Record<string, string> = {
   otherAlterations: "Nenhuma alteração",
 };
 
+export const progressLabels: Record<ProgressStage, string> = {
+  start: "No começo...",
+  nearHalf: "Quase na metade...",
+  pastHalf: "Passou da metade...",
+  nearEnd: "Quase no fim...",
+  last: "Última lâmina",
+};
+
 export const uiCopy = {
   heading: "Selecione as opções corretas:",
   answeredCounter: (answered: number, total: number) =>
@@ -152,4 +161,7 @@ export const uiCopy = {
     count === 1 ? "1 selecionado" : `${count} selecionados`,
   submitError:
     "Não foi possível salvar. Suas respostas foram mantidas — verifique sua conexão e tente novamente.",
+  progressHelpLabel: "Como funciona a barra de progresso",
+  progressHelp:
+    "A barra mostra seu avanço nas lâminas de hoje. Cada trecho representa um quarto da sua meta — ou das lâminas disponíveis, se houver menos lâminas que a meta. Ao atingir a meta, ela é ampliada automaticamente.",
 } as const;

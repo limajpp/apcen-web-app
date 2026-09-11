@@ -1,4 +1,4 @@
-import ProgressBar from "../ProgressBar";
+import AnalysisProgress from "./AnalysisProgress";
 import Slide from "./SlideView/Slide";
 import Header from "../Header";
 import SlideLabeling from "./SlideLabel/SlideLabeling";
@@ -38,7 +38,7 @@ export default function ActiveSlideSession({
           text="Identifique as opções na lâmina:"
         />
         <div className="shrink-0 w-full">
-          <ProgressBar reviewedImages={goalProgress} totalImages={goalTarget} />
+          <AnalysisProgress reviewed={goalProgress} target={goalTarget} />
         </div>
         <Slide
           className="relative w-full h-98 rounded-[16px] overflow-hidden shrink-0"
