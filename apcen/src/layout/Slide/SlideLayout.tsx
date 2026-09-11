@@ -70,8 +70,11 @@ export default function SlideLayout() {
   const formComplete = isComplete(labelFields);
 
   const fetchImagesPage = async (pageToFetch: number) => {
-    const { images, page: fetchedPage, totalPages: fetchedTotalPages } =
-      await fetchSlideQueue(isAdmin, pageToFetch, PAGE_SIZE);
+    const {
+      images,
+      page: fetchedPage,
+      totalPages: fetchedTotalPages,
+    } = await fetchSlideQueue(isAdmin, pageToFetch, PAGE_SIZE);
 
     setPage(fetchedPage);
     setTotalPages(fetchedTotalPages);
@@ -84,8 +87,11 @@ export default function SlideLayout() {
     setLoadError(null);
 
     try {
-      const { images, page: fetchedPage, totalPages: fetchedTotalPages } =
-        await fetchSlideQueue(isAdmin, 1, PAGE_SIZE);
+      const {
+        images,
+        page: fetchedPage,
+        totalPages: fetchedTotalPages,
+      } = await fetchSlideQueue(isAdmin, 1, PAGE_SIZE);
 
       setPage(fetchedPage);
       setTotalPages(fetchedTotalPages);
@@ -150,9 +156,12 @@ export default function SlideLayout() {
 
     try {
       response = savedSlide
-        ? await api.patch<AnalysisResponse>(`/analysis/${savedSlide.analysisId}`, {
-            result,
-          })
+        ? await api.patch<AnalysisResponse>(
+            `/analysis/${savedSlide.analysisId}`,
+            {
+              result,
+            },
+          )
         : await api.post<AnalysisResponse>(isAdmin ? "/verdict" : "/analysis", {
             imageId: image.id,
             result,
@@ -176,7 +185,9 @@ export default function SlideLayout() {
     if (isSubmitting || currentIndex === 0) return;
 
     const previousImage = imagesQueue[currentIndex - 1];
-    const savedSlide = previousImage ? savedSlides[previousImage.id] : undefined;
+    const savedSlide = previousImage
+      ? savedSlides[previousImage.id]
+      : undefined;
     if (!savedSlide) return;
 
     setCurrentIndex((previous) => previous - 1);
