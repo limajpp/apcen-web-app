@@ -210,6 +210,10 @@ export default function SlideLayout() {
   };
 
   const advance = () => {
+    document.querySelector<HTMLElement>(".analysis-scroll")?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
     setCurrentIndex((prev) => prev + 1);
     resetLabelFields();
   };
