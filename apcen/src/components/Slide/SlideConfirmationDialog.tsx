@@ -1,17 +1,14 @@
-import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
+import { CircleX } from "lucide-react";
+import SlideArrow from "./SlideView/SlideArrow";
 import {
   AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogCancel,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogFooter,
   AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { CircleX } from "lucide-react";
-import chevronRight from "@/assets/Chevron_Right.svg";
-import { useEffect, useState } from "react";
 
 interface SlideConfirmationDialogProps {
   confirmationText: string;
@@ -59,18 +56,13 @@ export default function SlideConfirmationDialog({
   }, [isDialogOpen, disabled]);
 
   const ActionButton = (
-    <Button
+    <SlideArrow
       id="slide-confirmation-trigger"
-      type="button"
-      variant="ghost"
+      direction="next"
       disabled={disabled}
-      className={`flex items-center justify-center w-full h-full rounded-none bg-transparent hover:bg-transparent border-none shadow-none shrink-0 p-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:outline-none ${
-        disabled || blocked ? "opacity-30" : ""
-      } ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+      dimmed={blocked}
       onClick={!requireDialog || blocked ? onNext : undefined}
-    >
-      <img src={chevronRight} alt="" />
-    </Button>
+    />
   );
 
   if (!requireDialog || blocked) return ActionButton;
@@ -78,34 +70,33 @@ export default function SlideConfirmationDialog({
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialogTrigger asChild>{ActionButton}</AlertDialogTrigger>
-      <AlertDialogContent className="flex flex-col justify-center items-center w-lg p-3">
-        <div className="flex flex-col items-center gap-2 shrink-0 w-122.25">
-          <AlertDialogCancel className="ml-auto" asChild>
-            <Button
-              className="flex bg-transparent border-none shadow-none hover:bg-transparent w-6 h-6 cursor-pointer"
-              variant="ghost"
-              size="icon"
+      <AlertDialogContent
+        overlayClassName="w-full bg-[#111140]/50"
+        className="left-1/2 flex w-lg max-w-lg! flex-col items-center gap-2 rounded-[16px] bg-white p-3 ring-0"
+      >
+        <AlertDialogCancel asChild>
+          <button
+            type="button"
+            aria-label={cancelButtonText}
+            className="ml-auto flex size-6 cursor-pointer items-center justify-center bg-transparent text-[#2A59A9]"
+          >
+            <CircleX className="size-6 stroke-[2px]" />
+          </button>
+        </AlertDialogCancel>
+        <div className="flex w-full flex-col items-center gap-6 p-4">
+          <AlertDialogTitle className="text-center font-clother text-[24px] font-normal text-[#3266BD]">
+            {confirmationText}
+          </AlertDialogTitle>
+          <div className="flex items-center gap-12 p-4">
+            <AlertDialogCancel className="h-12 w-32.75 cursor-pointer rounded-[8px] border-0 bg-[#9FC1FE]/30! font-clother text-[16px] text-[#3266BD]! shadow-none hover:bg-[#9FC1FE]/50!">
+              {cancelButtonText}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={onFinish}
+              className="h-12 w-32.75 cursor-pointer rounded-[8px] bg-[#3266BD]! font-clother text-[16px] font-bold text-white! hover:bg-[#2A59A9]!"
             >
-              <CircleX className="h-6! w-6! stroke-[2px] text-[#2A59A9]" />
-            </Button>
-          </AlertDialogCancel>
-          <div className="flex flex-col justify-center items-center self-stretch p-4 gap-6">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="font-clother text-[24px] text-[#3266BD] text-center w-100">
-                {confirmationText}
-              </AlertDialogTitle>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex items-center w-85.5 p-4 gap-12">
-              <AlertDialogCancel className="w-32.75 h-12 p-2 shrink-0 rounded-[8px] bg-[rgba(159,193,254,0.50)]! text-[#3266BD]! hover:bg-[#3266BD]! hover:text-[#FFF]! font-clother text-[16px] cursor-pointer">
-                {cancelButtonText}
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={onFinish}
-                className="w-32.75 h-12 p-2 shrink-0 rounded-[8px] bg-[rgba(159,193,254,0.50)]! text-[#3266BD]! hover:bg-[#3266BD]! hover:text-[#FFF]! font-clother text-[16px] cursor-pointer"
-              >
-                {actionButtonText}
-              </AlertDialogAction>
-            </AlertDialogFooter>
+              {actionButtonText}
+            </AlertDialogAction>
           </div>
         </div>
       </AlertDialogContent>

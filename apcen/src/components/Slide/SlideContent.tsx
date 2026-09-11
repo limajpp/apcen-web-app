@@ -1,5 +1,5 @@
 import useAuth from "@/hooks/useAuth";
-import ActiveSlideSession from "./ActiveSlideSession";
+import ActiveSlideSession, { type SlideNavigation } from "./ActiveSlideSession";
 import SlideSessionResults from "./SlideSessionResults";
 import type { AnalysisResultState } from "@/lib/analysis/types";
 import type { Dispatch, SetStateAction } from "react";
@@ -13,6 +13,7 @@ interface SlideContentProps {
   setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
   showMissing: boolean;
   submitError: string | null;
+  navigation: SlideNavigation;
   goalDone: boolean;
   showGoalNotice: boolean;
   onContinueAfterGoal: () => void;
@@ -25,11 +26,12 @@ export default function SlideContent({
   goalTarget,
   labelFields,
   setLabelFields,
+  showMissing,
+  submitError,
+  navigation,
   goalDone,
   showGoalNotice,
   onContinueAfterGoal,
-  showMissing,
-  submitError,
 }: SlideContentProps) {
   const { user } = useAuth();
 
@@ -53,6 +55,7 @@ export default function SlideContent({
       setLabelFields={setLabelFields}
       showMissing={showMissing}
       submitError={submitError}
+      navigation={navigation}
     />
   );
 }
