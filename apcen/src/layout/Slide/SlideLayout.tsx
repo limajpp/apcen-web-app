@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
-import SlideConfirmationDialog from "@/components/Slide/SlideConfirmationDialog";
+import AnalysisLayout from "../AnalysisLayout";
+import type { SlideNavigation } from "@/components/Slide/ActiveSlideSession";
 import {
   api,
+  type AnalysisResponse,
   buildImagePreviewUrl,
   fetchSlideQueue,
   type SlideQueueImage,
@@ -23,6 +25,11 @@ import {
 type Image = SlideQueueImage;
 
 const PAGE_SIZE = 100;
+
+type SavedSlide = {
+  analysisId: string;
+  fields: AnalysisResultState;
+};
 
 function cycleProgress(count: number, target: number) {
   if (target <= 0) return 0;
@@ -45,6 +52,10 @@ export default function SlideLayout() {
   const [reviewedCount, setReviewedCount] = useState<number>(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [savedSlides, setSavedSlides] = useState<Record<string, SavedSlide>>(
+    {},
+  );
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const totalImages = imagesQueue.length;
@@ -68,27 +79,34 @@ export default function SlideLayout() {
     return images;
   };
 
-  useEffect(() => {
-    async function fetchInitialImages() {
-      try {
-        const { images, page: fetchedPage, totalPages: fetchedTotalPages } =
-          await fetchSlideQueue(isAdmin, 1, PAGE_SIZE);
+  const fetchInitialImages = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError(null);
 
-        setPage(fetchedPage);
-        setTotalPages(fetchedTotalPages);
-        setImagesQueue(images);
+    try {
+      const { images, page: fetchedPage, totalPages: fetchedTotalPages } =
+        await fetchSlideQueue(isAdmin, 1, PAGE_SIZE);
 
-        if (images.length === 0) {
-          setIsFinished(true);
-        }
-      } catch (error) {
-        console.error("Failed to fetch images:", error);
-      } finally {
-        setIsLoading(false);
-      }
+      setPage(fetchedPage);
+      setTotalPages(fetchedTotalPages);
+      setImagesQueue(images);
+      setCurrentIndex(0);
+      setIsFinished(images.length === 0);
+    } catch (error) {
+      console.error("Failed to fetch images:", error);
+      setLoadError("Não foi possível carregar as lâminas. Tente novamente.");
+    } finally {
+      setIsLoading(false);
     }
-    fetchInitialImages();
   }, [isAdmin]);
+
+  useEffect(() => {
+    async function loadInitialImages() {
+      await fetchInitialImages();
+    }
+
+    void loadInitialImages();
+  }, [fetchInitialImages]);
 
   const resetLabelFields = () => {
     setLabelFields(emptyAnalysisResult);
@@ -122,16 +140,49 @@ export default function SlideLayout() {
     resetLabelFields();
   };
 
-  const submitCurrentSlide = async () => {
+  const submitCurrentSlide = async (): Promise<boolean> => {
+    const image = imagesQueue[currentIndex];
+    if (!image) throw new Error("No slide selected");
+
+    const savedSlide = savedSlides[image.id];
+    const result = toCreateResultPayload(labelFields);
+    let response: { data: AnalysisResponse };
+
     try {
-      await api.post(isAdmin ? "/verdict" : "/analysis", {
-        imageId: imagesQueue[currentIndex].id,
-        result: toCreateResultPayload(labelFields),
-      });
+      response = savedSlide
+        ? await api.patch<AnalysisResponse>(`/analysis/${savedSlide.analysisId}`, {
+            result,
+          })
+        : await api.post<AnalysisResponse>(isAdmin ? "/verdict" : "/analysis", {
+            imageId: image.id,
+            result,
+          });
     } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 409) return;
+      if (isAxiosError(error) && error.response?.status === 409) return true;
       throw error;
     }
+
+    if (!isAdmin) {
+      setSavedSlides((previous) => ({
+        ...previous,
+        [image.id]: { analysisId: response.data.id, fields: labelFields },
+      }));
+    }
+
+    return !savedSlide;
+  };
+
+  const handleBack = () => {
+    if (isSubmitting || currentIndex === 0) return;
+
+    const previousImage = imagesQueue[currentIndex - 1];
+    const savedSlide = previousImage ? savedSlides[previousImage.id] : undefined;
+    if (!savedSlide) return;
+
+    setCurrentIndex((previous) => previous - 1);
+    setLabelFields(savedSlide.fields);
+    setShowMissing(false);
+    setSubmitError(null);
   };
 
   const handleNext = async () => {
@@ -145,9 +196,9 @@ export default function SlideLayout() {
     setIsSubmitting(true);
 
     try {
-      await submitCurrentSlide();
+      const isNewSlide = await submitCurrentSlide();
 
-      markGoalIfReached(countReviewed());
+      if (isNewSlide) markGoalIfReached(countReviewed());
 
       if (currentIndex < totalImages - 1) {
         advance();
@@ -184,9 +235,9 @@ export default function SlideLayout() {
     setIsSubmitting(true);
 
     try {
-      await submitCurrentSlide();
+      const isNewSlide = await submitCurrentSlide();
 
-      markGoalIfReached(countReviewed());
+      if (isNewSlide) markGoalIfReached(countReviewed());
 
       setIsFinished(true);
     } catch (error) {
@@ -201,62 +252,77 @@ export default function SlideLayout() {
 
   const isFinalImage = currentIndex === totalImages - 1 && !hasMorePages;
 
+  const navigation: SlideNavigation = {
+    canGoBack: !isAdmin && currentIndex > 0,
+    onBack: handleBack,
+    onNext: handleNext,
+    onFinish: handleFinish,
+    requireDialog: isFinalImage,
+    blocked: !formComplete,
+    submitting: isSubmitting,
+  };
+
+  const content = (
+    <SlideContent
+      isFinished={isFinished}
+      imageUrl={
+        imagesQueue[currentIndex]
+          ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
+          : ""
+      }
+      goalProgress={goalProgress}
+      goalTarget={goalTarget}
+      labelFields={labelFields}
+      setLabelFields={setLabelFields}
+      showMissing={showMissing}
+      submitError={submitError}
+      navigation={navigation}
+      goalDone={goalDone}
+      showGoalNotice={showGoalNotice}
+      onContinueAfterGoal={handleContinueAfterGoal}
+    />
+  );
+
   if (isLoading) {
     return (
-      <BaseLayout className="h-full w-full">
-        <div className="flex items-center justify-center h-full w-full">
+      <AnalysisLayout>
+        <div className="flex flex-1 items-center justify-center">
           <span className="font-clother text-[20px] text-[#3266BD]">
             Carregando lâminas...
           </span>
+        </div>
+      </AnalysisLayout>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <BaseLayout className="h-full w-full">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+          <p role="alert" className="font-clother text-[20px] text-[#C0392B]">
+            {loadError}
+          </p>
+          <button
+            type="button"
+            onClick={() => void fetchInitialImages()}
+            className="rounded-[8px] bg-[#3266BD] px-5 py-3 font-clother text-white hover:bg-[#2A59A9]"
+          >
+            Tentar novamente
+          </button>
         </div>
       </BaseLayout>
     );
   }
 
-  return (
-    <BaseLayout className="h-full w-full">
-      <div className="flex-1 w-full overflow-y-auto scrollbar-hide flex flex-col">
-        <div className="flex flex-1 w-full min-h-full relative">
-          <div className="grid grid-cols-[1fr_auto_1fr] w-full items-stretch">
-            <div />
-            <div className="flex justify-center items-center py-4 md:py-10">
-              <SlideContent
-                isFinished={isFinished}
-                imageUrl={
-                  imagesQueue[currentIndex]
-                    ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
-                    : ""
-                }
-                showMissing={showMissing}
-                submitError={submitError}
-                goalProgress={goalProgress}
-                goalTarget={goalTarget}
-                labelFields={labelFields}
-                setLabelFields={setLabelFields}
-                goalDone={goalDone}
-                showGoalNotice={showGoalNotice}
-                onContinueAfterGoal={handleContinueAfterGoal}
-              />
-            </div>
-            {!isFinished && !showGoalNotice ? (
-              <div className="flex items-stretch justify-center">
-                <SlideConfirmationDialog
-                  confirmationText="Deseja concluir o questionário?"
-                  cancelButtonText="Cancelar"
-                  actionButtonText="Finalizar"
-                  requireDialog={isFinalImage}
-                  blocked={!formComplete}
-                  disabled={isSubmitting}
-                  onNext={handleNext}
-                  onFinish={handleFinish}
-                />
-              </div>
-            ) : (
-              <div />
-            )}
-          </div>
+  if (isFinished || showGoalNotice) {
+    return (
+      <BaseLayout className="h-full w-full">
+        <div className="flex w-full flex-1 items-center justify-center overflow-y-auto py-10 scrollbar-hide">
+          {content}
         </div>
-      </div>
-    </BaseLayout>
-  );
+      </BaseLayout>
+    );
+  }
+
+  return <AnalysisLayout>{content}</AnalysisLayout>;
 }

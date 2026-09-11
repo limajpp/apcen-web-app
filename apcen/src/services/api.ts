@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance } from "axios";
+import type { CreateResultPayload } from "@/lib/analysis/types";
 
 const RAW_API_URL = import.meta.env.VITE_API_URL;
 
@@ -31,6 +32,12 @@ export type SlideQueuePage = {
   images: SlideQueueImage[];
   page: number;
   totalPages: number;
+};
+
+export type AnalysisResponse = {
+  id: string;
+  imageId: string;
+  result: CreateResultPayload;
 };
 
 export async function fetchSlideQueue(
