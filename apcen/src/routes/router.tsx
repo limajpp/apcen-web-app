@@ -3,7 +3,6 @@ import SlideAnalysis from "@/pages/SlideAnalysis";
 import PrivateRoute from "@/components/PrivateRoute";
 
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import Goals from "@/pages/Goals";
 
 export const router = createBrowserRouter([
   {
@@ -18,13 +17,13 @@ export const router = createBrowserRouter([
     element: <PrivateRoute />,
     children: [
       {
-        path: "goals",
-        element: <Goals />,
-      },
-      {
         path: "slide-analysis",
         element: <SlideAnalysis />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
