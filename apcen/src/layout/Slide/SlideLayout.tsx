@@ -10,6 +10,7 @@ import {
 } from "@/services/api";
 import useAuth from "@/hooks/useAuth";
 import { emptyAnalysisResult } from "@/lib/analysis/types";
+import { uiCopy } from "@/lib/analysis/labels";
 import type { AnalysisResultState } from "@/lib/analysis/types";
 import { fieldSectionId } from "@/lib/analysis/fields";
 import {
@@ -43,6 +44,7 @@ export default function SlideLayout() {
     null,
   );
   const [reviewedCount, setReviewedCount] = useState<number>(0);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const totalImages = imagesQueue.length;
@@ -133,6 +135,8 @@ export default function SlideLayout() {
       return;
     }
 
+    setSubmitError(null);
+
     try {
       await submitCurrentSlide();
 
@@ -156,6 +160,7 @@ export default function SlideLayout() {
       setIsFinished(true);
     } catch (error) {
       console.error("Failed to save analysis", error);
+      setSubmitError(uiCopy.submitError);
     }
   };
 
@@ -165,6 +170,8 @@ export default function SlideLayout() {
       return;
     }
 
+    setSubmitError(null);
+
     try {
       await submitCurrentSlide();
 
@@ -173,6 +180,7 @@ export default function SlideLayout() {
       setIsFinished(true);
     } catch (error) {
       console.error("Failed to save final analysis", error);
+      setSubmitError(uiCopy.submitError);
     }
   };
 
@@ -207,6 +215,7 @@ export default function SlideLayout() {
                     : ""
                 }
                 highlightedFieldId={highlightedFieldId}
+                submitError={submitError}
                 goalProgress={goalProgress}
                 goalTarget={goalTarget}
                 labelFields={labelFields}

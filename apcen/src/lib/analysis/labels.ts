@@ -150,4 +150,6 @@ export const uiCopy = {
   dropdownEmpty: "Nenhum selecionado",
   dropdownCount: (count: number) =>
     count === 1 ? "1 selecionado" : `${count} selecionados`,
+  submitError:
+    "Não foi possível salvar. Suas respostas foram mantidas — verifique sua conexão e tente novamente.",
 } as const;

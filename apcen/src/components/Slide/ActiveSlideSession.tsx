@@ -16,6 +16,7 @@ interface ActiveSlideSessionProps {
   labelFields: AnalysisResultState;
   setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
   highlightedFieldId: string | null;
+  submitError: string | null;
 }
 
 export default function ActiveSlideSession({
@@ -26,6 +27,7 @@ export default function ActiveSlideSession({
   labelFields,
   setLabelFields,
   highlightedFieldId,
+  submitError,
 }: ActiveSlideSessionProps) {
   return (
     <div className="flex flex-row items-center">
@@ -42,6 +44,14 @@ export default function ActiveSlideSession({
           className="relative w-full h-98 rounded-[16px] overflow-hidden shrink-0"
           imageUrl={imageUrl}
         />
+        {submitError ? (
+          <p
+            role="alert"
+            className="w-full shrink-0 rounded-[8px] bg-[#C0392B]/10 px-4 py-3 font-clother text-[14px] text-[#C0392B]"
+          >
+            {submitError}
+          </p>
+        ) : null}
         <SlideLabeling
           labelFields={labelFields}
           setLabelFields={setLabelFields}
