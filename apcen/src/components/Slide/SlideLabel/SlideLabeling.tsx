@@ -24,12 +24,12 @@ export default function SlideLabeling({
         </h3>
         <span
           data-testid="answered-badge"
-          className="flex w-[68px] shrink-0 items-center justify-center rounded-[26px] bg-[#9FC1FE]/50 px-2 py-1 font-clother text-[16px] text-[#2A59A9]"
+          className="flex w-17 shrink-0 items-center justify-center rounded-[26px] bg-[#9FC1FE]/50 px-2 py-1 font-clother text-[16px] text-[#2A59A9]"
         >
           {uiCopy.answeredBadge(answeredCount(labelFields), totalFields)}
         </span>
       </div>
-      <div className="analysis-scroll h-[550px] w-full overflow-y-auto rounded-[16px] border-4 border-[#9FC1FE]/60 bg-[#F9F3EA] p-4">
+      <div className="analysis-scroll h-137.5 w-full overflow-y-auto rounded-[16px] border-4 border-[#9FC1FE]/60 bg-[#F9F3EA] p-4">
         <ol className="flex flex-col gap-8">
           {analysisFields.map((field, index) => (
             <SlideFieldSection

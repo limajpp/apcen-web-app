@@ -20,7 +20,7 @@ export default function SlideArrow({
       type="button"
       disabled={disabled}
       aria-label={direction === "next" ? "Próxima lâmina" : "Lâmina anterior"}
-      className={`group relative h-[552px] w-[58px] shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#2A59A9] ${
+      className={`group relative h-138 w-14.5 shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#2A59A9] ${
         disabled ? "cursor-not-allowed" : "cursor-pointer"
       } ${direction === "back" ? "-scale-x-100" : ""} ${className}`}
       {...props}
