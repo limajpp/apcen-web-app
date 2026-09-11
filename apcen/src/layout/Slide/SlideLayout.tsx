@@ -5,10 +5,10 @@ import BaseLayout from "../BaseLayout";
 import AnalysisLayout from "../AnalysisLayout";
 import type { SlideNavigation } from "@/components/Slide/ActiveSlideSession";
 import {
-  api,
-  type AnalysisResponse,
   buildImagePreviewUrl,
+  createSlideRecord,
   fetchSlideQueue,
+  updateSlideRecord,
   type SlideQueueImage,
 } from "@/services/api";
 import useAuth from "@/hooks/useAuth";
@@ -27,8 +27,14 @@ type Image = SlideQueueImage;
 const PAGE_SIZE = 100;
 
 type SavedSlide = {
-  analysisId: string;
+  index: number;
+  recordId: string;
   fields: AnalysisResultState;
+};
+
+type EditSession = {
+  returnIndex: number;
+  draft: AnalysisResultState;
 };
 
 type SessionSnapshot = {
@@ -75,9 +81,8 @@ export default function SlideLayout() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [savedSlides, setSavedSlides] = useState<Record<string, SavedSlide>>(
-    {},
-  );
+  const [lastSaved, setLastSaved] = useState<SavedSlide | null>(null);
+  const [editing, setEditing] = useState<EditSession | null>(null);
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const persistedSessionKey = user ? sessionStorageKey(user.id) : null;
@@ -91,6 +96,10 @@ export default function SlideLayout() {
   const goalProgress = cycleProgress(reviewedCount, goalTarget);
   const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
   const formComplete = isComplete(labelFields);
+  const canGoBack =
+    editing === null &&
+    lastSaved !== null &&
+    lastSaved.index === currentIndex - 1;
 
   const fetchImagesPage = async (pageToFetch: number) => {
     const {
@@ -159,18 +168,20 @@ export default function SlideLayout() {
   useEffect(() => {
     if (!persistedSessionKey || isLoading || loadError || isFinished) return;
 
-    const currentImage = imagesQueue[currentIndex];
+    const draftImage =
+      imagesQueue[editing ? editing.returnIndex : currentIndex];
     const snapshot: SessionSnapshot = {
       reviewedCount,
       goalDone,
       goalNoticeSeen,
-      draftImageId: currentImage?.id ?? null,
-      draftFields: labelFields,
+      draftImageId: draftImage?.id ?? null,
+      draftFields: editing ? editing.draft : labelFields,
     };
 
     localStorage.setItem(persistedSessionKey, JSON.stringify(snapshot));
   }, [
     currentIndex,
+    editing,
     goalDone,
     goalNoticeSeen,
     imagesQueue,
@@ -209,61 +220,69 @@ export default function SlideLayout() {
     return reviewed;
   };
 
-  const advance = () => {
+  const scrollPanelToTop = () => {
     document.querySelector<HTMLElement>(".analysis-scroll")?.scrollTo({
       top: 0,
       behavior: "smooth",
     });
+  };
+
+  const advance = () => {
+    scrollPanelToTop();
     setCurrentIndex((prev) => prev + 1);
     resetLabelFields();
   };
 
-  const submitCurrentSlide = async (): Promise<boolean> => {
+  const saveCurrentSlide = async () => {
     const image = imagesQueue[currentIndex];
     if (!image) throw new Error("No slide selected");
 
-    const savedSlide = savedSlides[image.id];
-    const result = toCreateResultPayload(labelFields);
-    let response: { data: AnalysisResponse };
+    const recordId = await createSlideRecord(
+      isAdmin,
+      image.id,
+      toCreateResultPayload(labelFields),
+    );
 
+    setLastSaved(
+      recordId ? { index: currentIndex, recordId, fields: labelFields } : null,
+    );
+  };
+
+  const returnFromEdit = (session: EditSession) => {
+    scrollPanelToTop();
+    setCurrentIndex(session.returnIndex);
+    setLabelFields(session.draft);
+    setShowMissing(false);
+    setEditing(null);
+  };
+
+  const saveEdit = async (session: EditSession, saved: SavedSlide) => {
     try {
-      response = savedSlide
-        ? await api.patch<AnalysisResponse>(
-            `/analysis/${savedSlide.analysisId}`,
-            {
-              result,
-            },
-          )
-        : await api.post<AnalysisResponse>(isAdmin ? "/verdict" : "/analysis", {
-            imageId: image.id,
-            result,
-          });
+      await updateSlideRecord(
+        isAdmin,
+        saved.recordId,
+        toCreateResultPayload(labelFields),
+      );
+      setLastSaved({ ...saved, fields: labelFields });
+      returnFromEdit(session);
     } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 409) return true;
+      if (isAxiosError(error) && error.response?.status === 409) {
+        setLastSaved(null);
+        returnFromEdit(session);
+        setSubmitError(uiCopy.editBlocked);
+        return;
+      }
       throw error;
     }
-
-    if (!isAdmin) {
-      setSavedSlides((previous) => ({
-        ...previous,
-        [image.id]: { analysisId: response.data.id, fields: labelFields },
-      }));
-    }
-
-    return !savedSlide;
   };
 
   const handleBack = () => {
-    if (isSubmitting || currentIndex === 0) return;
+    if (!canGoBack || !lastSaved || isSubmitting) return;
 
-    const previousImage = imagesQueue[currentIndex - 1];
-    const savedSlide = previousImage
-      ? savedSlides[previousImage.id]
-      : undefined;
-    if (!savedSlide) return;
-
-    setCurrentIndex((previous) => previous - 1);
-    setLabelFields(savedSlide.fields);
+    scrollPanelToTop();
+    setEditing({ returnIndex: currentIndex, draft: labelFields });
+    setCurrentIndex(lastSaved.index);
+    setLabelFields(lastSaved.fields);
     setShowMissing(false);
     setSubmitError(null);
   };
@@ -279,9 +298,14 @@ export default function SlideLayout() {
     setIsSubmitting(true);
 
     try {
-      const isNewSlide = await submitCurrentSlide();
+      if (editing && lastSaved) {
+        await saveEdit(editing, lastSaved);
+        return;
+      }
 
-      if (isNewSlide) markGoalIfReached(countReviewed());
+      await saveCurrentSlide();
+
+      markGoalIfReached(countReviewed());
 
       if (currentIndex < totalImages - 1) {
         advance();
@@ -321,9 +345,9 @@ export default function SlideLayout() {
     setIsSubmitting(true);
 
     try {
-      const isNewSlide = await submitCurrentSlide();
+      await saveCurrentSlide();
 
-      if (isNewSlide) markGoalIfReached(countReviewed());
+      markGoalIfReached(countReviewed());
 
       setIsFinished(true);
       if (persistedSessionKey) {
@@ -342,11 +366,11 @@ export default function SlideLayout() {
   const isFinalImage = currentIndex === totalImages - 1 && !hasMorePages;
 
   const navigation: SlideNavigation = {
-    canGoBack: !isAdmin && currentIndex > 0,
+    canGoBack,
     onBack: handleBack,
     onNext: handleNext,
     onFinish: handleFinish,
-    requireDialog: isFinalImage,
+    requireDialog: isFinalImage && editing === null,
     blocked: !formComplete,
     submitting: isSubmitting,
   };

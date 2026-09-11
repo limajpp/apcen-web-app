@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from "axios";
+import axios, { isAxiosError, type AxiosInstance } from "axios";
 import type { CreateResultPayload } from "@/lib/analysis/types";
 
 const RAW_API_URL = import.meta.env.VITE_API_URL;
@@ -34,12 +34,6 @@ export type SlideQueuePage = {
   totalPages: number;
 };
 
-export type AnalysisResponse = {
-  id: string;
-  imageId: string;
-  result: CreateResultPayload;
-};
-
 export async function fetchSlideQueue(
   isAdmin: boolean,
   page: number,
@@ -59,6 +53,33 @@ export async function fetchSlideQueue(
     page: data.page,
     totalPages: data.totalPages,
   };
+}
+
+export async function createSlideRecord(
+  isAdmin: boolean,
+  imageId: string,
+  result: CreateResultPayload,
+): Promise<string | null> {
+  try {
+    const { data } = await api.post<{ id: string }>(
+      isAdmin ? "/verdict" : "/analysis",
+      { imageId, result },
+    );
+    return data.id;
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 409) return null;
+    throw error;
+  }
+}
+
+export async function updateSlideRecord(
+  isAdmin: boolean,
+  recordId: string,
+  result: CreateResultPayload,
+): Promise<void> {
+  await api.patch(`${isAdmin ? "/verdict" : "/analysis"}/${recordId}`, {
+    result,
+  });
 }
 
 let isRefreshing = false;

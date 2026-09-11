@@ -152,6 +152,7 @@ export const uiCopy = {
   answeredBadge: (answered: number, total: number) => `${answered}/${total}`,
   submitError:
     "Não foi possível salvar. Suas respostas foram mantidas — verifique sua conexão e tente novamente.",
+  editBlocked: "Esta lâmina já foi finalizada e não pode mais ser alterada.",
   progressHelpLabel: "Como funciona a barra de progresso",
   progressHelp:
     "A barra mostra seu avanço nas lâminas de hoje. Cada trecho representa um quarto da sua meta — ou das lâminas disponíveis, se houver menos lâminas que a meta. Ao atingir a meta, ela é ampliada automaticamente.",
