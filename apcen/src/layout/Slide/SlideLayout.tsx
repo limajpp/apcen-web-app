@@ -46,6 +46,7 @@ export default function SlideLayout() {
   );
   const [reviewedCount, setReviewedCount] = useState<number>(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const totalImages = imagesQueue.length;
@@ -136,12 +137,14 @@ export default function SlideLayout() {
   };
 
   const handleNext = async () => {
+    if (isSubmitting) return;
     if (!isComplete(labelFields)) {
       focusFirstIncompleteField();
       return;
     }
 
     setSubmitError(null);
+    setIsSubmitting(true);
 
     try {
       await submitCurrentSlide();
@@ -167,16 +170,20 @@ export default function SlideLayout() {
     } catch (error) {
       console.error("Failed to save analysis", error);
       setSubmitError(uiCopy.submitError);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleFinish = async () => {
+    if (isSubmitting) return;
     if (!isComplete(labelFields)) {
       focusFirstIncompleteField();
       return;
     }
 
     setSubmitError(null);
+    setIsSubmitting(true);
 
     try {
       await submitCurrentSlide();
@@ -187,6 +194,8 @@ export default function SlideLayout() {
     } catch (error) {
       console.error("Failed to save final analysis", error);
       setSubmitError(uiCopy.submitError);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -239,6 +248,7 @@ export default function SlideLayout() {
                   actionButtonText="Finalizar"
                   requireDialog={isFinalImage}
                   blocked={!formComplete}
+                  disabled={isSubmitting}
                   onNext={handleNext}
                   onFinish={handleFinish}
                 />
