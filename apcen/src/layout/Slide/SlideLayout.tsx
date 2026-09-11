@@ -373,6 +373,7 @@ export default function SlideLayout() {
     requireDialog: isFinalImage && editing === null,
     blocked: !formComplete,
     submitting: isSubmitting,
+    editing: editing !== null,
   };
 
   const content = (

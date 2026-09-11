@@ -16,6 +16,7 @@ export type SlideNavigation = {
   requireDialog: boolean;
   blocked: boolean;
   submitting: boolean;
+  editing: boolean;
 };
 
 interface ActiveSlideSessionProps {
@@ -49,7 +50,11 @@ export default function ActiveSlideSession({
         text="Identifique as opções na lâmina:"
       />
       <div className="mt-8 w-full pr-6.75 pl-16.75">
-        <AnalysisProgress reviewed={goalProgress} target={goalTarget} />
+        <AnalysisProgress
+          reviewed={goalProgress}
+          target={goalTarget}
+          showBackMarker={navigation.editing}
+        />
       </div>
       <div className="mt-16.5 flex w-full flex-wrap items-start justify-between gap-6">
         <div className="mt-8 flex items-center gap-2">
