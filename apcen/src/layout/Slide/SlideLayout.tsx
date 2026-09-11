@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
 import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
 import SlideConfirmationDialog from "@/components/Slide/SlideConfirmationDialog";
@@ -123,10 +124,15 @@ export default function SlideLayout() {
   };
 
   const submitCurrentSlide = async () => {
-    await api.post(isAdmin ? "/verdict" : "/analysis", {
-      imageId: imagesQueue[currentIndex].id,
-      result: toCreateResultPayload(labelFields),
-    });
+    try {
+      await api.post(isAdmin ? "/verdict" : "/analysis", {
+        imageId: imagesQueue[currentIndex].id,
+        result: toCreateResultPayload(labelFields),
+      });
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 409) return;
+      throw error;
+    }
   };
 
   const handleNext = async () => {
