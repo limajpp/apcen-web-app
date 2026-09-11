@@ -4,33 +4,21 @@ import { RadioGroupItem } from "../../ui/radio-group";
 interface SlideOptionRadioProps {
   id: string;
   value: string;
-  letter: string;
   label: string;
-  onClick?: () => void;
 }
 
-export function SlideOptionRadio({
-  id,
-  value,
-  letter,
-  label,
-  onClick,
-}: SlideOptionRadioProps) {
+export function SlideOptionRadio({ id, value, label }: SlideOptionRadioProps) {
   return (
     <Label
-      className="flex flex-row justify-start items-center min-w-33.5 pr-4 h-12 py-2 px-4 gap-3 rounded-[8px] bg-[#2A59A9] cursor-pointer transition-shadow has-data-[state=checked]:ring-2 has-data-[state=checked]:ring-[#F9F3EA] has-data-[state=checked]:ring-offset-2 has-data-[state=checked]:ring-offset-[#F9F3EA]/0"
       htmlFor={id}
+      className="flex h-[42px] cursor-pointer items-center gap-2 rounded-[8px] bg-[#2A59A9] p-2 font-clother text-[14px] font-normal text-white"
     >
       <RadioGroupItem
         value={value}
         id={id}
-        onClick={onClick}
-        className="w-6 h-6 shrink-0 flex items-center justify-center border-2 border-solid rounded-full border-[#F9F3EA]! bg-transparent! [&_[data-slot=radio-group-indicator]>span]:w-3 [&_[data-slot=radio-group-indicator]>span]:h-3 [&_[data-slot=radio-group-indicator]>span]:bg-[#F9F3EA]"
+        className="size-6 shrink-0 border-2 border-solid border-[#F9F3EA]! bg-transparent! [&_[data-slot=radio-group-indicator]>span]:size-3 [&_[data-slot=radio-group-indicator]>span]:bg-[#F9F3EA]"
       />
-      <div className="flex items-center gap-2 text-[#FFFFFF] font-clother">
-        <span className="text-[24px] font-bold">{letter}</span>
-        <span className="text-[14px]">{label}</span>
-      </div>
+      <span>{label}</span>
     </Label>
   );
 }

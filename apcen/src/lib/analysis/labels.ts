@@ -13,23 +13,23 @@ import type {
 import type { ProgressStage } from "./progress";
 
 export const fieldTitles = {
-  patchAdequacy: "A amostra está adequada?",
-  presentStructures: "Quais estruturas aparecem?",
-  ganglionCells: "Tem célula ganglionar?",
-  ganglionCellsAmount: "Quantas células ganglionares?",
-  plexus: "Qual plexo aparece?",
-  nerveBundleCharacteristics: "Como estão os feixes nervosos?",
-  inflammatoryAlterations: "Quais alterações inflamatórias?",
-  otherAlterations: "Quais outras alterações?",
-  technicalArtifacts: "Quais artefatos técnicos?",
+  presentStructures: "Quais estruturas anatômicas estão predominantes?",
+  patchAdequacy: "Qual a adequação do recorte?",
+  ganglionCells: "Existem células ganglionares?",
+  ganglionCellsAmount: "Qual a quantidade de células ganglionares?",
+  nerveBundleCharacteristics: "Quais características dos feixes nervosos?",
+  plexus: "Existe plexo ou localização neural?",
+  inflammatoryAlterations: "Existem alterações inflamatórias e mucosas?",
+  otherAlterations: "Existem outras alterações histológicas?",
+  technicalArtifacts: "Existem artefatos técnicos?",
   artifactSeverity: "Os artefatos interferem na análise?",
 } as const;
 
 export const patchAdequacyLabels: Record<PatchAdequacy, string> = {
-  adequate: "Adequada",
-  partially_adequate: "Parcialmente adequada",
-  inadequate_absense: "Inadequada — ausência de material",
-  inadequate_artifact: "Inadequada — artefato",
+  adequate: "Avaliação neural",
+  partially_adequate: "Parcialmente adequado",
+  inadequate_absense: "Inadequado por ausência de tecido",
+  inadequate_artifact: "Inadequado por artefato",
   not_evaluable: "Não avaliável",
 };
 
@@ -44,31 +44,31 @@ export const structureLabels: Record<Structure, string> = {
 export const ganglionCellsLabels: Record<GanglionCells, string> = {
   present: "Presentes",
   absent: "Ausentes",
-  doubtful: "Duvidosas",
+  doubtful: "Suspeitas/duvidosas",
   not_evaluable: "Não avaliável",
 };
 
 export const ganglionCellsAmountLabels: Record<GanglionCellsAmount, string> = {
   zero: "Nenhuma",
   one: "Uma",
-  two_to_five: "De duas a cinco",
+  two_to_five: "Duas a cinco",
   more_than_five: "Mais de cinco",
   not_evaluable: "Não avaliável",
 };
 
 export const plexusLabels: Record<Plexus, string> = {
-  submucosal: "Submucoso",
-  myenteric: "Mientérico",
-  two_plexus: "Ambos os plexos",
-  structural_absense: "Ausência estrutural",
-  not_visible: "Não visível",
+  submucosal: "Plexo submucoso",
+  myenteric: "Plexo mioentérico",
+  two_plexus: "Dois plexos",
+  structural_absense: "Sem plexo definido",
+  not_visible: "Nenhum visível",
   not_evaluable: "Não avaliável",
 };
 
 export const nerveBundleLabels: Record<NerveBundleCharacteristic, string> = {
-  present: "Presentes",
-  hypertrofic: "Hipertróficos",
-  absent: "Ausentes",
+  present: "Presente/normal",
+  hypertrofic: "Aumentado/hipertrófico",
+  absent: "Ausente",
   not_evaluable: "Não avaliável",
 };
 
@@ -83,7 +83,7 @@ export const inflammatoryLabels: Record<InflammatoryAlteration, string> = {
   erosion: "Erosão",
   ulceration: "Ulceração",
   necrosis: "Necrose",
-  no_alteration: "Sem alterações",
+  no_alteration: "Sem alteração",
 };
 
 export const otherAlterationLabels: Record<OtherAlteration, string> = {
@@ -94,10 +94,10 @@ export const otherAlterationLabels: Record<OtherAlteration, string> = {
   muscular_hipertrofy: "Hipertrofia muscular",
   lymphoid_hyperplasia: "Hiperplasia linfoide",
   ischemic_change: "Alteração isquêmica",
-  microorganism: "Microrganismos",
+  microorganism: "Microrganismo ou parasito",
   neoplasm: "Neoplasia",
   dysplasia: "Displasia",
-  other: "Outra",
+  other: "Outro achado",
 };
 
 export const technicalArtifactLabels: Record<TechnicalArtifact, string> = {
@@ -105,22 +105,22 @@ export const technicalArtifactLabels: Record<TechnicalArtifact, string> = {
   overlap: "Sobreposição",
   irregular_cut: "Corte irregular",
   bubble: "Bolha",
-  dirt_or_precipitate: "Sujidade ou precipitado",
+  dirt_or_precipitate: "Sujeira",
   inadequate_coloring: "Coloração inadequada",
-  crush_artifact: "Artefato de esmagamento",
+  crush_artifact: "Crush artifact (esmagamento)",
   thermal_cauterization: "Cauterização térmica",
-  tear: "Rasgo",
+  tear: "Fragmentação e rasgos",
   inadequate_fixation: "Fixação inadequada",
-  injection_artifacts: "Artefatos de injeção",
+  injection_artifacts: "Artefatos de injeção (anestésicos)",
   needle_paths: "Trajetos de agulha",
   sample_border: "Borda da amostra",
-  absent_tissue: "Ausência de tecido",
-  no_artifact: "Sem artefatos",
+  absent_tissue: "Área sem tecido",
+  no_artifact: "Sem artefato",
 };
 
 export const artifactSeverityLabels: Record<ArtifactSeverity, string> = {
-  no_interference: "Não interfere",
-  interference: "Interfere",
+  no_interference: "Sem interferência",
+  interference: "Com interferência",
 };
 
 export const optionLabels: Record<string, string> = {
@@ -139,11 +139,6 @@ export const perFieldOptionLabels: Record<string, Record<string, string>> = {
   nerveBundleCharacteristics: nerveBundleLabels,
 };
 
-export const noneOptionLabels: Record<string, string> = {
-  presentStructures: "Nenhuma estrutura",
-  otherAlterations: "Nenhuma alteração",
-};
-
 export const progressLabels: Record<ProgressStage, string> = {
   start: "No começo...",
   nearHalf: "Quase na metade...",
@@ -154,11 +149,7 @@ export const progressLabels: Record<ProgressStage, string> = {
 
 export const uiCopy = {
   heading: "Selecione as opções corretas:",
-  answeredCounter: (answered: number, total: number) =>
-    `${answered}/${total} respondidas`,
-  dropdownEmpty: "Nenhum selecionado",
-  dropdownCount: (count: number) =>
-    count === 1 ? "1 selecionado" : `${count} selecionados`,
+  answeredBadge: (answered: number, total: number) => `${answered}/${total}`,
   submitError:
     "Não foi possível salvar. Suas respostas foram mantidas — verifique sua conexão e tente novamente.",
   progressHelpLabel: "Como funciona a barra de progresso",

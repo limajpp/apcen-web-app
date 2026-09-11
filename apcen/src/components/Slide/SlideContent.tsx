@@ -11,7 +11,7 @@ interface SlideContentProps {
   goalTarget: number;
   labelFields: AnalysisResultState;
   setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
-  highlightedFieldId: string | null;
+  showMissing: boolean;
   submitError: string | null;
   goalDone: boolean;
   showGoalNotice: boolean;
@@ -28,7 +28,7 @@ export default function SlideContent({
   goalDone,
   showGoalNotice,
   onContinueAfterGoal,
-  highlightedFieldId,
+  showMissing,
   submitError,
 }: SlideContentProps) {
   const { user } = useAuth();
@@ -51,7 +51,7 @@ export default function SlideContent({
       goalTarget={goalTarget}
       labelFields={labelFields}
       setLabelFields={setLabelFields}
-      highlightedFieldId={highlightedFieldId}
+      showMissing={showMissing}
       submitError={submitError}
     />
   );

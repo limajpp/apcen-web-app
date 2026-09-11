@@ -26,6 +26,23 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  .analysis-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .analysis-scroll::-webkit-scrollbar-track {
+    background: rgb(159 193 254 / 0.3);
+    border-radius: 16px;
+  }
+  .analysis-scroll::-webkit-scrollbar-thumb {
+    background: #9fc1fe;
+    border-radius: 20px;
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    .analysis-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #9fc1fe rgb(159 193 254 / 0.3);
+    }
+  }
 }
 
 #root {

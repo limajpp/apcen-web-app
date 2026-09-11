@@ -41,9 +41,7 @@ export default function SlideLayout() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [labelFields, setLabelFields] =
     useState<AnalysisResultState>(emptyAnalysisResult);
-  const [highlightedFieldId, setHighlightedFieldId] = useState<string | null>(
-    null,
-  );
+  const [showMissing, setShowMissing] = useState<boolean>(false);
   const [reviewedCount, setReviewedCount] = useState<number>(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -94,14 +92,14 @@ export default function SlideLayout() {
 
   const resetLabelFields = () => {
     setLabelFields(emptyAnalysisResult);
-    setHighlightedFieldId(null);
+    setShowMissing(false);
   };
 
   const focusFirstIncompleteField = () => {
     const fieldId = getFirstIncompleteFieldId(labelFields);
     if (!fieldId) return;
 
-    setHighlightedFieldId(fieldId);
+    setShowMissing(true);
     document
       .getElementById(fieldSectionId(fieldId))
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -229,7 +227,7 @@ export default function SlideLayout() {
                     ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
                     : ""
                 }
-                highlightedFieldId={highlightedFieldId}
+                showMissing={showMissing}
                 submitError={submitError}
                 goalProgress={goalProgress}
                 goalTarget={goalTarget}

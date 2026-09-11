@@ -1,4 +1,3 @@
-import { Card } from "../../ui/card";
 import SlideFieldSection from "./SlideFieldSection";
 import { analysisFields, totalFields } from "@/lib/analysis/fields";
 import { uiCopy } from "@/lib/analysis/labels";
@@ -9,42 +8,41 @@ import type { Dispatch, SetStateAction } from "react";
 interface SlideLabelingProps {
   labelFields: AnalysisResultState;
   setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
-  highlightedFieldId: string | null;
+  showMissing: boolean;
 }
 
 export default function SlideLabeling({
   labelFields,
   setLabelFields,
-  highlightedFieldId,
+  showMissing,
 }: SlideLabelingProps) {
-  const answered = answeredCount(labelFields);
-
   return (
-    <Card className="bg-transparent ring-0 flex flex-col w-full rounded-none gap-3 shadow-none p-0 overflow-visible">
-      <div className="flex flex-row items-baseline justify-between w-full">
+    <section className="flex w-full flex-col gap-2">
+      <div className="flex items-start justify-between gap-8">
         <h3 className="font-clother text-[18px] text-[#2A59A9]">
           {uiCopy.heading}
         </h3>
         <span
-          className={`font-clother text-[14px] ${
-            answered === totalFields ? "text-[#2A59A9]" : "text-[#2A59A9]/60"
-          }`}
+          data-testid="answered-badge"
+          className="flex w-[68px] shrink-0 items-center justify-center rounded-[26px] bg-[#9FC1FE]/50 px-2 py-1 font-clother text-[16px] text-[#2A59A9]"
         >
-          {uiCopy.answeredCounter(answered, totalFields)}
+          {uiCopy.answeredBadge(answeredCount(labelFields), totalFields)}
         </span>
       </div>
-      <div className="h-72 w-full overflow-y-auto scrollbar-hide snap-y snap-mandatory flex flex-col">
-        {analysisFields.map((field, index) => (
-          <SlideFieldSection
-            key={field.id}
-            field={field}
-            index={index}
-            state={labelFields}
-            setState={setLabelFields}
-            highlighted={highlightedFieldId === field.id}
-          />
-        ))}
+      <div className="analysis-scroll h-[550px] w-full overflow-y-auto rounded-[16px] border-4 border-[#9FC1FE]/60 bg-[#F9F3EA] p-4">
+        <ol className="flex flex-col gap-8">
+          {analysisFields.map((field, index) => (
+            <SlideFieldSection
+              key={field.id}
+              field={field}
+              index={index}
+              state={labelFields}
+              setState={setLabelFields}
+              showMissing={showMissing}
+            />
+          ))}
+        </ol>
       </div>
-    </Card>
+    </section>
   );
 }

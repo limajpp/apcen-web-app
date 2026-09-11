@@ -8,9 +8,14 @@ export function isFieldAnswered(
   const value = state[field.id];
   if (value === null) return false;
   if (field.kind === "single") return true;
+  return (value as string[]).length > 0;
+}
 
-  const list = value as string[];
-  return field.allowNone ? true : list.length > 0;
+export function isFieldSatisfied(
+  state: AnalysisResultState,
+  field: FieldDescriptor,
+): boolean {
+  return !field.required || isFieldAnswered(state, field);
 }
 
 export function answeredCount(state: AnalysisResultState): number {
@@ -18,14 +23,14 @@ export function answeredCount(state: AnalysisResultState): number {
 }
 
 export function isComplete(state: AnalysisResultState): boolean {
-  return analysisFields.every((field) => isFieldAnswered(state, field));
+  return analysisFields.every((field) => isFieldSatisfied(state, field));
 }
 
 export function getFirstIncompleteFieldId(
   state: AnalysisResultState,
 ): FieldId | null {
   return (
-    analysisFields.find((field) => !isFieldAnswered(state, field))?.id ?? null
+    analysisFields.find((field) => !isFieldSatisfied(state, field))?.id ?? null
   );
 }
 
@@ -33,9 +38,7 @@ export function toCreateResultPayload(
   state: AnalysisResultState,
 ): CreateResultPayload {
   if (!isComplete(state)) {
-    throw new Error(
-      "Cannot build an analysis payload from an incomplete form.",
-    );
+    throw new Error("Cannot build an analysis payload from an incomplete form.");
   }
 
   return {

@@ -5,85 +5,64 @@ export type FieldId = keyof AnalysisResultState;
 export type FieldDescriptor = {
   id: FieldId;
   kind: "single" | "multi";
-  control: "pills" | "dropdown";
+  required: boolean;
   options: readonly string[];
   exclusiveValues?: readonly string[];
-  allowNone?: boolean;
 };
 
 export const analysisFields: readonly FieldDescriptor[] = [
   {
-    id: "patchAdequacy",
-    kind: "single",
-    control: "pills",
-    options: [
-      "adequate",
-      "partially_adequate",
-      "inadequate_absense",
-      "inadequate_artifact",
-      "not_evaluable",
-    ],
-  },
-  {
     id: "presentStructures",
     kind: "multi",
-    control: "pills",
-    options: [
-      "mucosa",
-      "muscularis_mucosae",
-      "submucosa",
-      "muscularis_propria",
-      "serous",
-    ],
-    allowNone: true,
+    required: false,
+    options: ["mucosa", "muscularis_mucosae", "submucosa", "muscularis_propria", "serous"],
+  },
+  {
+    id: "patchAdequacy",
+    kind: "single",
+    required: true,
+    options: ["inadequate_absense", "adequate", "partially_adequate", "inadequate_artifact", "not_evaluable"],
   },
   {
     id: "ganglionCells",
     kind: "single",
-    control: "pills",
+    required: true,
     options: ["present", "absent", "doubtful", "not_evaluable"],
   },
   {
     id: "ganglionCellsAmount",
     kind: "single",
-    control: "pills",
+    required: true,
     options: ["zero", "one", "two_to_five", "more_than_five", "not_evaluable"],
-  },
-  {
-    id: "plexus",
-    kind: "single",
-    control: "pills",
-    options: [
-      "submucosal",
-      "myenteric",
-      "two_plexus",
-      "structural_absense",
-      "not_visible",
-      "not_evaluable",
-    ],
   },
   {
     id: "nerveBundleCharacteristics",
     kind: "multi",
-    control: "pills",
+    required: true,
     options: ["present", "hypertrofic", "absent", "not_evaluable"],
     exclusiveValues: ["absent", "not_evaluable"],
   },
   {
+    id: "plexus",
+    kind: "single",
+    required: true,
+    options: ["submucosal", "myenteric", "two_plexus", "structural_absense", "not_visible", "not_evaluable"],
+  },
+  {
     id: "inflammatoryAlterations",
     kind: "multi",
-    control: "dropdown",
+    required: true,
     options: [
       "acute_inflammation",
       "chronic_inflammation",
       "cryptitis",
       "crypt_abscess",
       "crypt_dilation",
-      "mucin_depletion",
-      "mucin_increase",
       "erosion",
-      "ulceration",
+      "mucin_increase",
+      "mucin_depletion",
       "necrosis",
+      "ulceration",
       "no_alteration",
     ],
     exclusiveValues: ["no_alteration"],
@@ -91,26 +70,25 @@ export const analysisFields: readonly FieldDescriptor[] = [
   {
     id: "otherAlterations",
     kind: "multi",
-    control: "dropdown",
+    required: false,
     options: [
       "fibrosis",
-      "edema",
       "vascular_congestion",
-      "bleeding",
+      "dysplasia",
       "muscular_hipertrofy",
       "lymphoid_hyperplasia",
+      "edema",
       "ischemic_change",
       "microorganism",
+      "bleeding",
       "neoplasm",
-      "dysplasia",
       "other",
     ],
-    allowNone: true,
   },
   {
     id: "technicalArtifacts",
     kind: "multi",
-    control: "dropdown",
+    required: true,
     options: [
       "fold",
       "overlap",
@@ -133,13 +111,11 @@ export const analysisFields: readonly FieldDescriptor[] = [
   {
     id: "artifactSeverity",
     kind: "single",
-    control: "pills",
+    required: true,
     options: ["no_interference", "interference"],
   },
-] as const;
+];
 
 export const totalFields = analysisFields.length;
 
 export const fieldSectionId = (id: FieldId) => `analysis-field-${id}`;
-
-export const letterFor = (index: number) => String.fromCharCode(65 + index);

@@ -15,7 +15,7 @@ interface ActiveSlideSessionProps {
   goalTarget: number;
   labelFields: AnalysisResultState;
   setLabelFields: Dispatch<SetStateAction<AnalysisResultState>>;
-  highlightedFieldId: string | null;
+  showMissing: boolean;
   submitError: string | null;
 }
 
@@ -26,7 +26,7 @@ export default function ActiveSlideSession({
   goalTarget,
   labelFields,
   setLabelFields,
-  highlightedFieldId,
+  showMissing,
   submitError,
 }: ActiveSlideSessionProps) {
   return (
@@ -55,7 +55,7 @@ export default function ActiveSlideSession({
         <SlideLabeling
           labelFields={labelFields}
           setLabelFields={setLabelFields}
-          highlightedFieldId={highlightedFieldId}
+          showMissing={showMissing}
         />
       </Card>
     </div>
