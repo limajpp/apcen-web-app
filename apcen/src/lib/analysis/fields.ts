@@ -14,14 +14,26 @@ export const analysisFields: readonly FieldDescriptor[] = [
   {
     id: "presentStructures",
     kind: "multi",
-    required: false,
-    options: ["mucosa", "muscularis_mucosae", "submucosa", "muscularis_propria", "serous"],
+    required: true,
+    options: [
+      "mucosa",
+      "muscularis_mucosae",
+      "submucosa",
+      "muscularis_propria",
+      "serous",
+    ],
   },
   {
     id: "patchAdequacy",
     kind: "single",
     required: true,
-    options: ["inadequate_absense", "adequate", "partially_adequate", "inadequate_artifact", "not_evaluable"],
+    options: [
+      "inadequate_absense",
+      "adequate",
+      "partially_adequate",
+      "inadequate_artifact",
+      "not_evaluable",
+    ],
   },
   {
     id: "ganglionCells",
@@ -46,7 +58,14 @@ export const analysisFields: readonly FieldDescriptor[] = [
     id: "plexus",
     kind: "single",
     required: true,
-    options: ["submucosal", "myenteric", "two_plexus", "structural_absense", "not_visible", "not_evaluable"],
+    options: [
+      "submucosal",
+      "myenteric",
+      "two_plexus",
+      "structural_absense",
+      "not_visible",
+      "not_evaluable",
+    ],
   },
   {
     id: "inflammatoryAlterations",
@@ -70,7 +89,7 @@ export const analysisFields: readonly FieldDescriptor[] = [
   {
     id: "otherAlterations",
     kind: "multi",
-    required: false,
+    required: true,
     options: [
       "fibrosis",
       "vascular_congestion",
