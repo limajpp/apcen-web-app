@@ -31,6 +31,28 @@ type SavedSlide = {
   fields: AnalysisResultState;
 };
 
+type SessionSnapshot = {
+  reviewedCount: number;
+  goalDone: boolean;
+  goalNoticeSeen: boolean;
+  draftImageId: string | null;
+  draftFields: AnalysisResultState;
+};
+
+const sessionStorageKey = (userId: string) => `@Apcen:slide-session:${userId}`;
+
+function readSessionSnapshot(key: string): SessionSnapshot | null {
+  const stored = localStorage.getItem(key);
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored) as SessionSnapshot;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
 function cycleProgress(count: number, target: number) {
   if (target <= 0) return 0;
   const remainder = count % target;
@@ -58,6 +80,7 @@ export default function SlideLayout() {
   );
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const persistedSessionKey = user ? sessionStorageKey(user.id) : null;
   const totalImages = imagesQueue.length;
   const hasMorePages = page < totalPages;
   const dailyGoal = user?.goal ?? totalImages;
@@ -96,15 +119,34 @@ export default function SlideLayout() {
       setPage(fetchedPage);
       setTotalPages(fetchedTotalPages);
       setImagesQueue(images);
-      setCurrentIndex(0);
+      const snapshot = persistedSessionKey
+        ? readSessionSnapshot(persistedSessionKey)
+        : null;
+      const draftIndex = snapshot?.draftImageId
+        ? images.findIndex((image) => image.id === snapshot.draftImageId)
+        : -1;
+
+      setCurrentIndex(draftIndex >= 0 ? draftIndex : 0);
+      setReviewedCount(snapshot?.reviewedCount ?? 0);
+      setGoalDone(snapshot?.goalDone ?? false);
+      setGoalNoticeSeen(snapshot?.goalNoticeSeen ?? false);
+      if (draftIndex >= 0 && snapshot?.draftFields) {
+        setLabelFields(snapshot.draftFields);
+      } else {
+        setLabelFields(emptyAnalysisResult);
+      }
+
       setIsFinished(images.length === 0);
+      if (images.length === 0 && persistedSessionKey) {
+        localStorage.removeItem(persistedSessionKey);
+      }
     } catch (error) {
       console.error("Failed to fetch images:", error);
       setLoadError("Não foi possível carregar as lâminas. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
-  }, [isAdmin]);
+  }, [isAdmin, persistedSessionKey]);
 
   useEffect(() => {
     async function loadInitialImages() {
@@ -113,6 +155,32 @@ export default function SlideLayout() {
 
     void loadInitialImages();
   }, [fetchInitialImages]);
+
+  useEffect(() => {
+    if (!persistedSessionKey || isLoading || loadError || isFinished) return;
+
+    const currentImage = imagesQueue[currentIndex];
+    const snapshot: SessionSnapshot = {
+      reviewedCount,
+      goalDone,
+      goalNoticeSeen,
+      draftImageId: currentImage?.id ?? null,
+      draftFields: labelFields,
+    };
+
+    localStorage.setItem(persistedSessionKey, JSON.stringify(snapshot));
+  }, [
+    currentIndex,
+    goalDone,
+    goalNoticeSeen,
+    imagesQueue,
+    isFinished,
+    isLoading,
+    labelFields,
+    loadError,
+    persistedSessionKey,
+    reviewedCount,
+  ]);
 
   const resetLabelFields = () => {
     setLabelFields(emptyAnalysisResult);
@@ -227,6 +295,9 @@ export default function SlideLayout() {
       }
 
       setIsFinished(true);
+      if (persistedSessionKey) {
+        localStorage.removeItem(persistedSessionKey);
+      }
     } catch (error) {
       console.error("Failed to save analysis", error);
       setSubmitError(uiCopy.submitError);
@@ -251,6 +322,9 @@ export default function SlideLayout() {
       if (isNewSlide) markGoalIfReached(countReviewed());
 
       setIsFinished(true);
+      if (persistedSessionKey) {
+        localStorage.removeItem(persistedSessionKey);
+      }
     } catch (error) {
       console.error("Failed to save final analysis", error);
       setSubmitError(uiCopy.submitError);
