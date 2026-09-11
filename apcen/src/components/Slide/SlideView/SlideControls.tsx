@@ -16,7 +16,7 @@ export default function SlideControls({
   onReset,
 }: SlideControlsProps) {
   return (
-    <div className="absolute bottom-8 left-1/2 inline-flex h-[70px] w-[212px] -translate-x-1/2 items-center justify-center gap-10 rounded-[20px] bg-[#F9F3EA]">
+    <div className="absolute bottom-8 left-1/2 inline-flex h-17.5 w-53 -translate-x-1/2 items-center justify-center gap-10 rounded-[20px] bg-[#F9F3EA]">
       <Button
         size="icon"
         variant="ghost"
