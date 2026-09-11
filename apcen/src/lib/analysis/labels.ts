@@ -16,17 +16,17 @@ export const fieldTitles = {
   presentStructures: "Quais estruturas anatômicas estão predominantes?",
   patchAdequacy: "Qual a adequação do recorte?",
   ganglionCells: "Existem células ganglionares?",
-  ganglionCellsAmount: "Qual a quantidade de células ganglionares?",
+  ganglionCellsAmount: "Qual a quantidade de células ganglionares",
   nerveBundleCharacteristics: "Quais características dos feixes nervosos?",
-  plexus: "Existe plexo ou localização neural?",
+  plexus: "Existe plexo ou localização neural",
   inflammatoryAlterations: "Existem alterações inflamatórias e mucosas?",
   otherAlterations: "Existem outras alterações histológicas?",
-  technicalArtifacts: "Existem artefatos técnicos?",
-  artifactSeverity: "Os artefatos interferem na análise?",
+  technicalArtifacts: "os artefatos técnicos?",
+  artifactSeverity: "Quais alterações aparecem?",
 } as const;
 
 export const patchAdequacyLabels: Record<PatchAdequacy, string> = {
-  adequate: "Avaliação neural",
+  adequate: "Adequado",
   partially_adequate: "Parcialmente adequado",
   inadequate_absense: "Inadequado por ausência de tecido",
   inadequate_artifact: "Inadequado por artefato",
@@ -61,7 +61,7 @@ export const plexusLabels: Record<Plexus, string> = {
   myenteric: "Plexo mioentérico",
   two_plexus: "Dois plexos",
   structural_absense: "Sem plexo definido",
-  not_visible: "Nenhum visível",
+  not_visible: "Nenhum vísivel",
   not_evaluable: "Não avaliável",
 };
 
