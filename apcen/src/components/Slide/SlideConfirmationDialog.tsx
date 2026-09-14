@@ -37,6 +37,7 @@ export default function SlideConfirmationDialog({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Enter" || event.repeat || isDialogOpen || disabled)
         return;
+      if (document.querySelector('[role="alertdialog"]')) return;
 
       const triggerButton = document.getElementById(
         "slide-confirmation-trigger",
