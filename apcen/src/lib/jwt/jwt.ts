@@ -11,7 +11,10 @@ export const storeTokens = (accessToken: string, refreshToken: string) => {
   localStorage.setItem("@App:refreshToken", refreshToken);
 };
 
-export const decodeUserFromToken = (accessToken: string): DecodeResult => {
+export const decodeUserFromToken = (
+  accessToken: string,
+  { allowExpired = false }: { allowExpired?: boolean } = {},
+): DecodeResult => {
   let claims: AccessTokenClaims;
 
   try {
@@ -29,7 +32,7 @@ export const decodeUserFromToken = (accessToken: string): DecodeResult => {
   const { sub: id, username, exp, role, goal } = claims;
 
   if (!id || !username) return { ok: false, reason: "missing-claims" };
-  if (exp && exp * 1000 <= Date.now())
+  if (!allowExpired && exp && exp * 1000 <= Date.now())
     return { ok: false, reason: "expired-token" };
 
   return { ok: true, returned: { id, username, role, goal } };
@@ -40,7 +43,8 @@ export const loadStoredUser = (): DecodeResult => {
 
   if (!token) return { ok: false, reason: "missing-token" };
 
-  const result = decodeUserFromToken(token);
+  const canRefresh = localStorage.getItem("@App:refreshToken") !== null;
+  const result = decodeUserFromToken(token, { allowExpired: canRefresh });
 
   if (!result.ok) clearStoredTokens();
 
