@@ -1,5 +1,5 @@
 import SlideFieldSection from "./SlideFieldSection";
-import { analysisFields, totalFields } from "@/lib/analysis/fields";
+import { visibleFields } from "@/lib/analysis/fields";
 import { uiCopy } from "@/lib/analysis/labels";
 import { answeredCount } from "@/lib/analysis/validation";
 import type { AnalysisResultState } from "@/lib/analysis/types";
@@ -16,6 +16,8 @@ export default function SlideLabeling({
   setLabelFields,
   showMissing,
 }: SlideLabelingProps) {
+  const fields = visibleFields(labelFields);
+
   return (
     <section className="flex w-full flex-col gap-2">
       <div className="flex items-start justify-between gap-8">
@@ -26,12 +28,12 @@ export default function SlideLabeling({
           data-testid="answered-badge"
           className="flex w-17 shrink-0 items-center justify-center rounded-[26px] bg-[#9FC1FE]/50 px-2 py-1 font-clother text-[16px] text-[#2A59A9]"
         >
-          {uiCopy.answeredBadge(answeredCount(labelFields), totalFields)}
+          {uiCopy.answeredBadge(answeredCount(labelFields), fields.length)}
         </span>
       </div>
       <div className="analysis-scroll h-137.5 w-full overflow-y-auto rounded-[16px] border-4 border-[#9FC1FE]/60 bg-[#F9F3EA] p-4">
         <ol className="flex flex-col gap-8">
-          {analysisFields.map((field, index) => (
+          {fields.map((field, index) => (
             <SlideFieldSection
               key={field.id}
               field={field}

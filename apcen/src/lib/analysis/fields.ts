@@ -8,7 +8,11 @@ export type FieldDescriptor = {
   required: boolean;
   options: readonly string[];
   exclusiveValues?: readonly string[];
+  visibleWhen?: (state: AnalysisResultState) => boolean;
 };
+
+export const hasTechnicalArtifact = (state: AnalysisResultState) =>
+  (state.technicalArtifacts ?? []).some((value) => value !== "no_artifact");
 
 export const analysisFields: readonly FieldDescriptor[] = [
   {
@@ -132,9 +136,16 @@ export const analysisFields: readonly FieldDescriptor[] = [
     kind: "single",
     required: true,
     options: ["no_interference", "interference"],
+    visibleWhen: hasTechnicalArtifact,
   },
 ];
 
-export const totalFields = analysisFields.length;
+export const isFieldVisible = (
+  state: AnalysisResultState,
+  field: FieldDescriptor,
+) => field.visibleWhen?.(state) ?? true;
+
+export const visibleFields = (state: AnalysisResultState) =>
+  analysisFields.filter((field) => isFieldVisible(state, field));
 
 export const fieldSectionId = (id: FieldId) => `analysis-field-${id}`;

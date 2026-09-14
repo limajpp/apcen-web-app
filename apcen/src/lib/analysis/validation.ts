@@ -1,4 +1,11 @@
-import { analysisFields, type FieldDescriptor, type FieldId } from "./fields";
+import {
+  analysisFields,
+  hasTechnicalArtifact,
+  isFieldVisible,
+  visibleFields,
+  type FieldDescriptor,
+  type FieldId,
+} from "./fields";
 import type { AnalysisResultState, CreateResultPayload } from "./types";
 
 export function isFieldAnswered(
@@ -15,11 +22,16 @@ export function isFieldSatisfied(
   state: AnalysisResultState,
   field: FieldDescriptor,
 ): boolean {
-  return !field.required || isFieldAnswered(state, field);
+  return (
+    !isFieldVisible(state, field) ||
+    !field.required ||
+    isFieldAnswered(state, field)
+  );
 }
 
 export function answeredCount(state: AnalysisResultState): number {
-  return analysisFields.filter((field) => isFieldAnswered(state, field)).length;
+  return visibleFields(state).filter((field) => isFieldAnswered(state, field))
+    .length;
 }
 
 export function isComplete(state: AnalysisResultState): boolean {
@@ -46,7 +58,9 @@ export function toCreateResultPayload(
     ganglionCells: state.ganglionCells!,
     ganglionCellsAmount: state.ganglionCellsAmount!,
     plexus: state.plexus!,
-    artifactSeverity: state.artifactSeverity!,
+    artifactSeverity: hasTechnicalArtifact(state)
+      ? state.artifactSeverity!
+      : "no_interference",
     presentStructures: state.presentStructures ?? [],
     inflammatoryAlterations: state.inflammatoryAlterations ?? [],
     otherAlterations: state.otherAlterations ?? [],
