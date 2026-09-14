@@ -4,11 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo layout
 
-The actual application lives in the `apcen/` subdirectory, not the repo root — run all commands from there:
-
-```bash
-cd apcen
-```
+The application lives at the repository root; run all commands from there. It is deployed on Vercel: `vercel.json` sets the Vite build and rewrites every path to `index.html` so client-side routes such as `/slide-analysis` survive a reload.
 
 ## Commands
 
