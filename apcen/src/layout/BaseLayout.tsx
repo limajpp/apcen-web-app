@@ -9,15 +9,27 @@ import Logo from "../components/Logo";
 interface BaseLayoutProps {
   className: string;
   children: ReactNode;
+  action?: ReactNode;
 }
 
-export default function BaseLayout({ className, children }: BaseLayoutProps) {
+export default function BaseLayout({
+  className,
+  children,
+  action,
+}: BaseLayoutProps) {
   return (
     <ResizablePanelGroup className={className} orientation="horizontal">
       <ResizablePanel className="flex flex-col bg-[#F9F3EA]" defaultSize="70%">
         <ResizablePanelGroup orientation="vertical">
           <ResizablePanel className="flex flex-col" defaultSize="100%">
-            <Logo />
+            {action ? (
+              <div className="flex items-center justify-between pr-6">
+                <Logo />
+                {action}
+              </div>
+            ) : (
+              <Logo />
+            )}
             {children}
           </ResizablePanel>
         </ResizablePanelGroup>

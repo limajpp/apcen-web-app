@@ -3,6 +3,7 @@ import { isAxiosError } from "axios";
 import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
 import AnalysisLayout from "../AnalysisLayout";
+import LogoutButton from "@/components/LogoutButton";
 import type { SlideNavigation } from "@/components/Slide/ActiveSlideSession";
 import {
   buildImagePreviewUrl,
@@ -416,7 +417,7 @@ export default function SlideLayout() {
 
   if (loadError) {
     return (
-      <BaseLayout className="h-full w-full">
+      <BaseLayout className="h-full w-full" action={<LogoutButton />}>
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <p role="alert" className="font-clother text-[20px] text-[#C0392B]">
             {loadError}
@@ -435,7 +436,7 @@ export default function SlideLayout() {
 
   if (isFinished || showGoalNotice) {
     return (
-      <BaseLayout className="h-full w-full">
+      <BaseLayout className="h-full w-full" action={<LogoutButton />}>
         <div className="flex w-full flex-1 items-center justify-center overflow-y-auto py-10 scrollbar-hide">
           {content}
         </div>
