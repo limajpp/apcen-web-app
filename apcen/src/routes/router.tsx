@@ -1,6 +1,7 @@
 import Auth from "@/pages/Auth";
 import SlideAnalysis from "@/pages/SlideAnalysis";
 import PrivateRoute from "@/components/PrivateRoute";
+import PublicRoute from "@/components/PublicRoute";
 
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
@@ -10,8 +11,13 @@ export const router = createBrowserRouter([
     element: <Navigate to="/login" replace />,
   },
   {
-    path: "/login",
-    element: <Auth />,
+    element: <PublicRoute />,
+    children: [
+      {
+        path: "login",
+        element: <Auth />,
+      },
+    ],
   },
   {
     element: <PrivateRoute />,
