@@ -43,7 +43,7 @@ export default function ActiveSlideSession({
   navigation,
 }: ActiveSlideSessionProps) {
   return (
-    <div className="flex w-full flex-col px-17 pb-10">
+    <div className="flex w-full flex-col px-6 pb-10 min-[1512px]:px-17">
       <Header
         userName={user?.username}
         className="mt-3.25 flex flex-col items-start justify-center gap-2"
@@ -56,7 +56,7 @@ export default function ActiveSlideSession({
           showBackMarker={navigation.editing}
         />
       </div>
-      <div className="mt-16.5 flex w-full flex-wrap items-start justify-between gap-6">
+      <div className="mt-16.5 flex w-full flex-col items-start gap-6 xl:flex-row xl:justify-between">
         <div className="mt-8 flex items-center gap-2">
           <SlideArrow
             direction="back"
@@ -78,7 +78,7 @@ export default function ActiveSlideSession({
             onFinish={navigation.onFinish}
           />
         </div>
-        <div className="flex w-170 flex-col gap-3">
+        <div className="flex w-full max-w-170 min-w-0 flex-col gap-3 xl:flex-1">
           {submitError ? (
             <p
               role="alert"

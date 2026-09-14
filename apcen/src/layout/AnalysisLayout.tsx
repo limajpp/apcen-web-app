@@ -8,7 +8,7 @@ interface AnalysisLayoutProps {
 export default function AnalysisLayout({ children }: AnalysisLayoutProps) {
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto bg-[#F9F3EA]">
-      <div className="pt-4.75 pl-12.25">
+      <div className="pt-4.75 pl-1.25 min-[1512px]:pl-12.25">
         <Logo />
       </div>
       {children}
