@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import SlideContent from "@/components/Slide/SlideContent";
 import BaseLayout from "../BaseLayout";
@@ -74,6 +74,7 @@ export default function SlideLayout() {
   const [showMissing, setShowMissing] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const submittingRef = useRef(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<SavedSlide | null>(null);
   const [editing, setEditing] = useState<EditSession | null>(null);
@@ -288,12 +289,13 @@ export default function SlideLayout() {
   };
 
   const handleNext = async () => {
-    if (isSubmitting) return;
+    if (submittingRef.current) return;
     if (!isComplete(labelFields)) {
       focusFirstIncompleteField();
       return;
     }
 
+    submittingRef.current = true;
     setSubmitError(null);
     setIsSubmitting(true);
 
@@ -330,17 +332,19 @@ export default function SlideLayout() {
       console.error("Failed to save analysis", error);
       setSubmitError(uiCopy.submitError);
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };
 
   const handleFinish = async () => {
-    if (isSubmitting) return;
+    if (submittingRef.current) return;
     if (!isComplete(labelFields)) {
       focusFirstIncompleteField();
       return;
     }
 
+    submittingRef.current = true;
     setSubmitError(null);
     setIsSubmitting(true);
 
@@ -357,6 +361,7 @@ export default function SlideLayout() {
       console.error("Failed to save final analysis", error);
       setSubmitError(uiCopy.submitError);
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };
