@@ -1,5 +1,12 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import OpenSeadragon from "openseadragon";
+import { uiCopy } from "@/lib/analysis/labels";
 
 export interface SlideViewerHandle {
   zoomIn: () => void;
@@ -15,6 +22,8 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
   ({ imageUrl }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const viewerRef = useRef<OpenSeadragon.Viewer | null>(null);
+    const [failedUrl, setFailedUrl] = useState<string | null>(null);
+    const [attempt, setAttempt] = useState(0);
 
     useEffect(() => {
       if (!containerRef.current) return;
@@ -52,8 +61,10 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
           imageUrl,
           message: (event as unknown as { message?: string }).message,
         });
+        setFailedUrl(imageUrl);
       });
       viewer.addHandler("open", () => {
+        setFailedUrl(null);
         const viewport = viewer.viewport as OpenSeadragon.Viewport & {
           minZoomLevel: number;
         };
@@ -65,7 +76,7 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
         viewer.destroy();
         viewerRef.current = null;
       };
-    }, [imageUrl]);
+    }, [imageUrl, attempt]);
 
     useImperativeHandle(ref, () => ({
       zoomIn: () => {
@@ -79,7 +90,36 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
       },
     }));
 
-    return <div ref={containerRef} className="w-full h-full" />;
+    const retry = () => {
+      setFailedUrl(null);
+      setAttempt((current) => current + 1);
+    };
+
+    return (
+      <div className="relative h-full w-full">
+        <div
+          ref={containerRef}
+          className="h-full w-full [&_.openseadragon-message]:hidden!"
+        />
+        {failedUrl === imageUrl ? (
+          <div
+            aria-live="polite"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-[#F9F3EA] p-6 text-center"
+          >
+            <p className="font-clother text-[18px] text-[#2A59A9]">
+              {uiCopy.imageLoadError}
+            </p>
+            <button
+              type="button"
+              onClick={retry}
+              className="cursor-pointer rounded-[8px] bg-[#3266BD] px-5 py-3 font-clother text-[16px] text-white hover:bg-[#2A59A9]"
+            >
+              {uiCopy.retry}
+            </button>
+          </div>
+        ) : null}
+      </div>
+    );
   },
 );
 
