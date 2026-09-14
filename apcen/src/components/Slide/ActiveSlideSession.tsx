@@ -67,6 +67,23 @@ export default function ActiveSlideSession({
             className="relative h-138 w-135.75 shrink-0 overflow-hidden rounded-[21px]"
             imageUrl={imageUrl}
           />
+        </div>
+        <div className="flex w-full min-w-0 items-end gap-2 xl:flex-1 xl:justify-end">
+          <div className="flex w-full max-w-170 min-w-0 flex-col gap-3">
+            {submitError ? (
+              <p
+                role="alert"
+                className="w-full rounded-[8px] bg-[#C0392B]/10 px-4 py-3 font-clother text-[14px] text-[#C0392B]"
+              >
+                {submitError}
+              </p>
+            ) : null}
+            <SlideLabeling
+              labelFields={labelFields}
+              setLabelFields={setLabelFields}
+              showMissing={showMissing}
+            />
+          </div>
           <SlideConfirmationDialog
             confirmationText="Deseja concluir o questionário?"
             cancelButtonText="Cancelar"
@@ -76,21 +93,6 @@ export default function ActiveSlideSession({
             disabled={navigation.submitting}
             onNext={navigation.onNext}
             onFinish={navigation.onFinish}
-          />
-        </div>
-        <div className="flex w-full max-w-170 min-w-0 flex-col gap-3 xl:flex-1">
-          {submitError ? (
-            <p
-              role="alert"
-              className="w-full rounded-[8px] bg-[#C0392B]/10 px-4 py-3 font-clother text-[14px] text-[#C0392B]"
-            >
-              {submitError}
-            </p>
-          ) : null}
-          <SlideLabeling
-            labelFields={labelFields}
-            setLabelFields={setLabelFields}
-            showMissing={showMissing}
           />
         </div>
       </div>
