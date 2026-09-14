@@ -15,7 +15,7 @@ import {
   type SlideQueueImage,
 } from "@/services/api";
 import useAuth from "@/hooks/useAuth";
-import { emptyAnalysisResult } from "@/lib/analysis/types";
+import { initialAnalysisResult } from "@/lib/analysis/types";
 import { uiCopy } from "@/lib/analysis/labels";
 import type { AnalysisResultState } from "@/lib/analysis/types";
 import { fieldSectionId } from "@/lib/analysis/fields";
@@ -71,7 +71,7 @@ export default function SlideLayout() {
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [labelFields, setLabelFields] =
-    useState<AnalysisResultState>(emptyAnalysisResult);
+    useState<AnalysisResultState>(initialAnalysisResult);
   const [showMissing, setShowMissing] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -144,7 +144,7 @@ export default function SlideLayout() {
       if (draftIndex >= 0 && snapshot?.draftFields) {
         setLabelFields(snapshot.draftFields);
       } else {
-        setLabelFields(emptyAnalysisResult);
+        setLabelFields(initialAnalysisResult);
       }
 
       setIsFinished(images.length === 0);
@@ -190,7 +190,7 @@ export default function SlideLayout() {
   ]);
 
   const resetLabelFields = () => {
-    setLabelFields(emptyAnalysisResult);
+    setLabelFields(initialAnalysisResult);
     setShowMissing(false);
   };
 

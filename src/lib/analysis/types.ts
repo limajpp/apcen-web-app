@@ -118,3 +118,10 @@ export const emptyAnalysisResult: AnalysisResultState = {
   technicalArtifacts: null,
   nerveBundleCharacteristics: null,
 };
+
+export const initialAnalysisResult: AnalysisResultState = {
+  ...emptyAnalysisResult,
+  inflammatoryAlterations: ["no_alteration"],
+  otherAlterations: ["other"],
+  technicalArtifacts: ["no_artifact"],
+};
