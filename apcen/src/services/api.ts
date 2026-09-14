@@ -82,6 +82,18 @@ export async function updateSlideRecord(
   });
 }
 
+export async function fetchCompletedCount(): Promise<number> {
+  const { data } = await api.get<{ totalPages: number }>(
+    "/analysis/me?page=1&limit=1",
+  );
+  return data.totalPages;
+}
+
+export async function fetchCurrentGoal(): Promise<number> {
+  const { data } = await api.get<{ goal: number }>("/user/me");
+  return data.goal;
+}
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;

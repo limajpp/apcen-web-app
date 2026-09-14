@@ -7,6 +7,8 @@ import type { SlideNavigation } from "@/components/Slide/ActiveSlideSession";
 import {
   buildImagePreviewUrl,
   createSlideRecord,
+  fetchCompletedCount,
+  fetchCurrentGoal,
   fetchSlideQueue,
   updateSlideRecord,
   type SlideQueueImage,
@@ -38,9 +40,6 @@ type EditSession = {
 };
 
 type SessionSnapshot = {
-  reviewedCount: number;
-  goalDone: boolean;
-  goalNoticeSeen: boolean;
   draftImageId: string | null;
   draftFields: AnalysisResultState;
 };
@@ -59,25 +58,20 @@ function readSessionSnapshot(key: string): SessionSnapshot | null {
   }
 }
 
-function cycleProgress(count: number, target: number) {
-  if (target <= 0) return 0;
-  const remainder = count % target;
-  return remainder === 0 && count > 0 ? target : remainder;
-}
-
 export default function SlideLayout() {
   const [imagesQueue, setImagesQueue] = useState<Image[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  const [goalDone, setGoalDone] = useState<boolean>(false);
-  const [goalNoticeSeen, setGoalNoticeSeen] = useState<boolean>(false);
+  const [goalNotice, setGoalNotice] = useState<boolean>(false);
+  const [goal, setGoal] = useState<number | null>(null);
+  const [completedAtLoad, setCompletedAtLoad] = useState<number>(0);
+  const [completedCount, setCompletedCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [labelFields, setLabelFields] =
     useState<AnalysisResultState>(emptyAnalysisResult);
   const [showMissing, setShowMissing] = useState<boolean>(false);
-  const [reviewedCount, setReviewedCount] = useState<number>(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -88,13 +82,14 @@ export default function SlideLayout() {
   const persistedSessionKey = user ? sessionStorageKey(user.id) : null;
   const totalImages = imagesQueue.length;
   const hasMorePages = page < totalPages;
-  const dailyGoal = user?.goal ?? totalImages;
-  const goalTarget =
-    totalPages <= 1 && totalImages > 0
-      ? Math.min(dailyGoal, totalImages)
-      : dailyGoal;
-  const goalProgress = cycleProgress(reviewedCount, goalTarget);
-  const showGoalNotice = goalDone && !goalNoticeSeen && !isFinished;
+  const reachableCount = completedAtLoad + totalImages;
+  const progressTarget =
+    goal === null
+      ? reachableCount
+      : hasMorePages
+        ? goal
+        : Math.min(goal, reachableCount);
+  const showGoalNotice = goalNotice && !isFinished;
   const formComplete = isComplete(labelFields);
   const canGoBack =
     editing === null &&
@@ -119,15 +114,23 @@ export default function SlideLayout() {
     setLoadError(null);
 
     try {
-      const {
-        images,
-        page: fetchedPage,
-        totalPages: fetchedTotalPages,
-      } = await fetchSlideQueue(isAdmin, 1, PAGE_SIZE);
+      const [
+        { images, page: fetchedPage, totalPages: fetchedTotalPages },
+        completed,
+        currentGoal,
+      ] = await Promise.all([
+        fetchSlideQueue(isAdmin, 1, PAGE_SIZE),
+        isAdmin ? 0 : fetchCompletedCount(),
+        isAdmin ? null : fetchCurrentGoal(),
+      ]);
 
       setPage(fetchedPage);
       setTotalPages(fetchedTotalPages);
       setImagesQueue(images);
+      setCompletedAtLoad(completed);
+      setCompletedCount(completed);
+      setGoal(currentGoal);
+      setGoalNotice(false);
       const snapshot = persistedSessionKey
         ? readSessionSnapshot(persistedSessionKey)
         : null;
@@ -136,9 +139,6 @@ export default function SlideLayout() {
         : -1;
 
       setCurrentIndex(draftIndex >= 0 ? draftIndex : 0);
-      setReviewedCount(snapshot?.reviewedCount ?? 0);
-      setGoalDone(snapshot?.goalDone ?? false);
-      setGoalNoticeSeen(snapshot?.goalNoticeSeen ?? false);
       if (draftIndex >= 0 && snapshot?.draftFields) {
         setLabelFields(snapshot.draftFields);
       } else {
@@ -171,9 +171,6 @@ export default function SlideLayout() {
     const draftImage =
       imagesQueue[editing ? editing.returnIndex : currentIndex];
     const snapshot: SessionSnapshot = {
-      reviewedCount,
-      goalDone,
-      goalNoticeSeen,
       draftImageId: draftImage?.id ?? null,
       draftFields: editing ? editing.draft : labelFields,
     };
@@ -182,15 +179,12 @@ export default function SlideLayout() {
   }, [
     currentIndex,
     editing,
-    goalDone,
-    goalNoticeSeen,
     imagesQueue,
     isFinished,
     isLoading,
     labelFields,
     loadError,
     persistedSessionKey,
-    reviewedCount,
   ]);
 
   const resetLabelFields = () => {
@@ -208,16 +202,22 @@ export default function SlideLayout() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const markGoalIfReached = (reviewed: number) => {
-    if (user && user.goal && reviewed >= dailyGoal) {
-      setGoalDone(true);
+  const refreshGoal = async () => {
+    try {
+      setGoal(await fetchCurrentGoal());
+    } catch (error) {
+      console.error("Failed to refresh the goal", error);
     }
   };
 
-  const countReviewed = () => {
-    const reviewed = reviewedCount + 1;
-    setReviewedCount(reviewed);
-    return reviewed;
+  const registerSave = () => {
+    const completed = completedCount + 1;
+    setCompletedCount(completed);
+
+    if (goal !== null && completed >= goal) {
+      setGoalNotice(true);
+      void refreshGoal();
+    }
   };
 
   const scrollPanelToTop = () => {
@@ -305,7 +305,7 @@ export default function SlideLayout() {
 
       await saveCurrentSlide();
 
-      markGoalIfReached(countReviewed());
+      registerSave();
 
       if (currentIndex < totalImages - 1) {
         advance();
@@ -347,7 +347,7 @@ export default function SlideLayout() {
     try {
       await saveCurrentSlide();
 
-      markGoalIfReached(countReviewed());
+      registerSave();
 
       setIsFinished(true);
       if (persistedSessionKey) {
@@ -361,7 +361,7 @@ export default function SlideLayout() {
     }
   };
 
-  const handleContinueAfterGoal = () => setGoalNoticeSeen(true);
+  const handleContinueAfterGoal = () => setGoalNotice(false);
 
   const isFinalImage = currentIndex === totalImages - 1 && !hasMorePages;
 
@@ -384,14 +384,14 @@ export default function SlideLayout() {
           ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
           : ""
       }
-      goalProgress={goalProgress}
-      goalTarget={goalTarget}
+      goalProgress={completedCount}
+      goalTarget={progressTarget}
       labelFields={labelFields}
       setLabelFields={setLabelFields}
       showMissing={showMissing}
       submitError={submitError}
       navigation={navigation}
-      goalDone={goalDone}
+      goalDone={goalNotice}
       showGoalNotice={showGoalNotice}
       onContinueAfterGoal={handleContinueAfterGoal}
     />
