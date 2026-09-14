@@ -21,8 +21,8 @@ export const fieldTitles = {
   plexus: "Existe plexo ou localização neural",
   inflammatoryAlterations: "Existem alterações inflamatórias e mucosas?",
   otherAlterations: "Existem outras alterações histológicas?",
-  technicalArtifacts: "os artefatos técnicos?",
-  artifactSeverity: "Quais alterações aparecem?",
+  technicalArtifacts: "Quais os artefatos técnicos?",
+  artifactSeverity: "Possui interferência do artefato?",
 } as const;
 
 export const patchAdequacyLabels: Record<PatchAdequacy, string> = {
