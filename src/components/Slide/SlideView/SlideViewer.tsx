@@ -29,7 +29,7 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
       if (!containerRef.current) return;
       if (!imageUrl) {
         console.error(
-          "No image url to open. The image list response is missing a usable storageKey.",
+          "No image url to open. The image list response is missing a usable id.",
         );
         return;
       }

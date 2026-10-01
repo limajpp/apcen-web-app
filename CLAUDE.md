@@ -41,14 +41,13 @@ APCEN is a slide-labeling tool for histology images (ganglion/layer presence). F
 
 ### Images
 
-The API never returns a usable image link. `ReturnImageDto` carries a `storageKey` — a MinIO
-object key like `images/<uuid>/<uuid>.png`. To load the bytes, build
-`${API_URL}image/${encodeURIComponent(storageKey)}/redirect` via `buildImagePreviewUrl`
-(`src/services/api.ts`); that endpoint 307-redirects to a presigned MinIO URL valid for an hour.
+The API never returns a usable image link. To load the bytes, build
+`${API_URL}image/${encodeURIComponent(id)}/redirect` from the image's `id` via `buildImagePreviewUrl`
+(`src/services/api.ts`); the backend looks up the image's MinIO object key and 307-redirects to a
+presigned MinIO URL valid for an hour. `ReturnImageDto` no longer exposes the storage key.
 
-Two constraints: the endpoint is deliberately **unauthenticated** (OpenSeadragon fetches it as an
-image resource and cannot send a `Bearer` header), and the key **must be percent-encoded**
-because it contains slashes while the backend route param matches one path segment.
+The endpoint is deliberately **unauthenticated** (OpenSeadragon fetches it as an image resource and
+cannot send a `Bearer` header) and is throttled to 10 requests per minute.
 
 ### API/auth conventions
 

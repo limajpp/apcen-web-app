@@ -17,13 +17,12 @@ export const api: AxiosInstance = axios.create({
   timeout: 10000,
 });
 
-export const buildImagePreviewUrl = (storageKey: string): string =>
-  `${API_URL}image/${encodeURIComponent(storageKey)}/redirect`;
+export const buildImagePreviewUrl = (imageId: string): string =>
+  `${API_URL}image/${encodeURIComponent(imageId)}/redirect`;
 
 export type SlideQueueImage = {
   id: string;
   blade: string;
-  storageKey: string;
   hasConflict: boolean;
   createdAt: string;
 };

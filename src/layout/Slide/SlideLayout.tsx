@@ -387,7 +387,7 @@ export default function SlideLayout() {
       isFinished={isFinished}
       imageUrl={
         imagesQueue[currentIndex]
-          ? buildImagePreviewUrl(imagesQueue[currentIndex].storageKey)
+          ? buildImagePreviewUrl(imagesQueue[currentIndex].id)
           : ""
       }
       goalProgress={completedCount}
