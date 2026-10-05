@@ -34,49 +34,70 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
         return;
       }
 
-      const viewer = OpenSeadragon({
-        element: containerRef.current,
-        tileSources: {
-          type: "image",
-          url: imageUrl,
-        },
-        loadTilesWithAjax: true,
-        ajaxHeaders: { "ngrok-skip-browser-warning": "true" },
-        showNavigationControl: false,
-        drawer: "canvas",
-        homeFillsViewer: true,
-        maxZoomPixelRatio: 4,
-        minZoomImageRatio: 0.9,
-        visibilityRatio: 1,
-        constrainDuringPan: true,
-        animationTime: 0.4,
-        springStiffness: 10,
-        gestureSettingsMouse: {
-          clickToZoom: false,
-          dblClickToZoom: true,
-        },
-      });
+      let viewer: OpenSeadragon.Viewer | null = null;
+      let objectUrl: string | null = null;
+      const controller = new AbortController();
+      const container = containerRef.current;
 
-      viewerRef.current = viewer;
-      viewer.addHandler("open-failed", (event) => {
-        console.error("Failed to open slide image.", {
-          imageUrl,
-          message: (event as unknown as { message?: string }).message,
-        });
+      const fail = (message?: string) => {
+        console.error("Failed to open slide image.", { imageUrl, message });
         setFailedUrl(imageUrl);
-      });
-      viewer.addHandler("open", () => {
-        setFailedUrl(null);
-        const viewport = viewer.viewport as OpenSeadragon.Viewport & {
-          minZoomLevel: number;
-        };
-        viewport.minZoomLevel = viewport.getHomeZoom();
-        viewport.applyConstraints();
-      });
+      };
+
+      // OpenSeadragon loads `type: "image"` sources through `new Image()`, which
+      // cannot send headers, so the ngrok interstitial would be served instead
+      // of the PNG. Fetch the bytes ourselves and hand it a blob URL.
+      fetch(imageUrl, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+        signal: controller.signal,
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.blob();
+        })
+        .then((blob) => {
+          objectUrl = URL.createObjectURL(blob);
+          const instance = OpenSeadragon({
+            element: container,
+            tileSources: { type: "image", url: objectUrl },
+            showNavigationControl: false,
+            drawer: "canvas",
+            homeFillsViewer: true,
+            maxZoomPixelRatio: 4,
+            minZoomImageRatio: 0.9,
+            visibilityRatio: 1,
+            constrainDuringPan: true,
+            animationTime: 0.4,
+            springStiffness: 10,
+            gestureSettingsMouse: {
+              clickToZoom: false,
+              dblClickToZoom: true,
+            },
+          });
+          viewer = instance;
+          viewerRef.current = instance;
+          instance.addHandler("open-failed", (event) => {
+            fail((event as unknown as { message?: string }).message);
+          });
+          instance.addHandler("open", () => {
+            setFailedUrl(null);
+            const viewport = instance.viewport as OpenSeadragon.Viewport & {
+              minZoomLevel: number;
+            };
+            viewport.minZoomLevel = viewport.getHomeZoom();
+            viewport.applyConstraints();
+          });
+        })
+        .catch((error: unknown) => {
+          if (controller.signal.aborted) return;
+          fail(error instanceof Error ? error.message : String(error));
+        });
 
       return () => {
-        viewer.destroy();
+        controller.abort();
+        viewer?.destroy();
         viewerRef.current = null;
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
       };
     }, [imageUrl, attempt]);
 
