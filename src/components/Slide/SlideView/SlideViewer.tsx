@@ -40,6 +40,8 @@ const SlideViewer = forwardRef<SlideViewerHandle, SlideViewerProps>(
           type: "image",
           url: imageUrl,
         },
+        loadTilesWithAjax: true,
+        ajaxHeaders: { "ngrok-skip-browser-warning": "true" },
         showNavigationControl: false,
         drawer: "canvas",
         homeFillsViewer: true,
