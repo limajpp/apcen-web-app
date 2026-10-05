@@ -15,6 +15,7 @@ export const API_URL = RAW_API_URL.endsWith("/")
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 10000,
+  headers: { "ngrok-skip-browser-warning": "true" },
 });
 
 export const buildImagePreviewUrl = (imageId: string): string =>
@@ -156,7 +157,10 @@ api.interceptors.response.use(
         const response = await axios.post(
           refreshUrl,
           { refreshToken: storedRefreshToken },
-          { timeout: 10000 },
+          {
+            timeout: 10000,
+            headers: { "ngrok-skip-browser-warning": "true" },
+          },
         );
 
         const { accessToken, refreshToken } = response.data;
