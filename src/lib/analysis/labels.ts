@@ -39,6 +39,7 @@ export const structureLabels: Record<Structure, string> = {
   submucosa: "Submucosa",
   muscularis_propria: "Muscular própria",
   serous: "Serosa",
+  not_evaluable: "Não avaliável",
 };
 
 export const ganglionCellsLabels: Record<GanglionCells, string> = {
@@ -97,6 +98,8 @@ export const otherAlterationLabels: Record<OtherAlteration, string> = {
   microorganism: "Microrganismo ou parasito",
   neoplasm: "Neoplasia",
   dysplasia: "Displasia",
+  ostomy: "Presença de ostomia",
+  no_alteration: "Sem alteração",
   other: "Outro achado",
 };
 

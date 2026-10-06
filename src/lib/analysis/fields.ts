@@ -25,7 +25,9 @@ export const analysisFields: readonly FieldDescriptor[] = [
       "submucosa",
       "muscularis_propria",
       "serous",
+      "not_evaluable",
     ],
+    exclusiveValues: ["not_evaluable"],
   },
   {
     id: "patchAdequacy",
@@ -38,18 +40,6 @@ export const analysisFields: readonly FieldDescriptor[] = [
       "inadequate_artifact",
       "not_evaluable",
     ],
-  },
-  {
-    id: "ganglionCells",
-    kind: "single",
-    required: true,
-    options: ["present", "absent", "doubtful", "not_evaluable"],
-  },
-  {
-    id: "ganglionCellsAmount",
-    kind: "single",
-    required: true,
-    options: ["zero", "one", "two_to_five", "more_than_five", "not_evaluable"],
   },
   {
     id: "nerveBundleCharacteristics",
@@ -70,6 +60,18 @@ export const analysisFields: readonly FieldDescriptor[] = [
       "not_visible",
       "not_evaluable",
     ],
+  },
+  {
+    id: "ganglionCells",
+    kind: "single",
+    required: true,
+    options: ["present", "absent", "doubtful", "not_evaluable"],
+  },
+  {
+    id: "ganglionCellsAmount",
+    kind: "single",
+    required: true,
+    options: ["zero", "one", "two_to_five", "more_than_five", "not_evaluable"],
   },
   {
     id: "inflammatoryAlterations",
@@ -105,8 +107,11 @@ export const analysisFields: readonly FieldDescriptor[] = [
       "microorganism",
       "bleeding",
       "neoplasm",
+      "ostomy",
+      "no_alteration",
       "other",
     ],
+    exclusiveValues: ["no_alteration"],
   },
   {
     id: "technicalArtifacts",
@@ -145,7 +150,14 @@ export const isFieldVisible = (
   field: FieldDescriptor,
 ) => field.visibleWhen?.(state) ?? true;
 
-export const visibleFields = (state: AnalysisResultState) =>
-  analysisFields.filter((field) => isFieldVisible(state, field));
+export const visibleFields = (
+  state: AnalysisResultState,
+  allowedFieldIds?: readonly FieldId[],
+) =>
+  analysisFields.filter(
+    (field) =>
+      (!allowedFieldIds || allowedFieldIds.includes(field.id)) &&
+      isFieldVisible(state, field),
+  );
 
 export const fieldSectionId = (id: FieldId) => `analysis-field-${id}`;

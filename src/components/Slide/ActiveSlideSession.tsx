@@ -6,6 +6,7 @@ import SlideLabeling from "./SlideLabel/SlideLabeling";
 import SlideConfirmationDialog from "./SlideConfirmationDialog";
 import { type User } from "@/lib/jwt/jwt.types";
 import type { AnalysisResultState } from "@/lib/analysis/types";
+import type { FieldId } from "@/lib/analysis/fields";
 import type { Dispatch, SetStateAction } from "react";
 
 export type SlideNavigation = {
@@ -29,6 +30,7 @@ interface ActiveSlideSessionProps {
   showMissing: boolean;
   submitError: string | null;
   navigation: SlideNavigation;
+  allowedFieldIds?: readonly FieldId[];
 }
 
 export default function ActiveSlideSession({
@@ -41,6 +43,7 @@ export default function ActiveSlideSession({
   showMissing,
   submitError,
   navigation,
+  allowedFieldIds,
 }: ActiveSlideSessionProps) {
   return (
     <div className="flex w-full flex-col px-6 pb-10 min-[1512px]:px-17">
@@ -82,6 +85,7 @@ export default function ActiveSlideSession({
               labelFields={labelFields}
               setLabelFields={setLabelFields}
               showMissing={showMissing}
+              allowedFieldIds={allowedFieldIds}
             />
           </div>
           <SlideConfirmationDialog

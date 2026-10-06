@@ -92,7 +92,10 @@ export default function SlideLayout() {
         ? goal
         : Math.min(goal, reachableCount);
   const showGoalNotice = goalNotice && !isFinished;
-  const formComplete = isComplete(labelFields);
+  const conflictFields = isAdmin
+    ? imagesQueue[currentIndex]?.conflictingFields
+    : undefined;
+  const formComplete = isComplete(labelFields, conflictFields);
   const canGoBack =
     editing === null &&
     lastSaved !== null &&
@@ -195,7 +198,7 @@ export default function SlideLayout() {
   };
 
   const focusFirstIncompleteField = () => {
-    const fieldId = getFirstIncompleteFieldId(labelFields);
+    const fieldId = getFirstIncompleteFieldId(labelFields, conflictFields);
     if (!fieldId) return;
 
     setShowMissing(true);
@@ -242,7 +245,7 @@ export default function SlideLayout() {
     const recordId = await createSlideRecord(
       isAdmin,
       image.id,
-      toCreateResultPayload(labelFields),
+      toCreateResultPayload(labelFields, conflictFields),
     );
 
     setLastSaved(
@@ -263,7 +266,7 @@ export default function SlideLayout() {
       await updateSlideRecord(
         isAdmin,
         saved.recordId,
-        toCreateResultPayload(labelFields),
+        toCreateResultPayload(labelFields, conflictFields),
       );
       setLastSaved({ ...saved, fields: labelFields });
       returnFromEdit(session);
@@ -291,7 +294,7 @@ export default function SlideLayout() {
 
   const handleNext = async () => {
     if (submittingRef.current) return;
-    if (!isComplete(labelFields)) {
+    if (!formComplete) {
       focusFirstIncompleteField();
       return;
     }
@@ -340,7 +343,7 @@ export default function SlideLayout() {
 
   const handleFinish = async () => {
     if (submittingRef.current) return;
-    if (!isComplete(labelFields)) {
+    if (!formComplete) {
       focusFirstIncompleteField();
       return;
     }
@@ -397,6 +400,9 @@ export default function SlideLayout() {
       showMissing={showMissing}
       submitError={submitError}
       navigation={navigation}
+      allowedFieldIds={
+        conflictFields
+      }
       goalDone={goalNotice}
       showGoalNotice={showGoalNotice}
       onContinueAfterGoal={handleContinueAfterGoal}

@@ -2,6 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import ActiveSlideSession, { type SlideNavigation } from "./ActiveSlideSession";
 import SlideSessionResults from "./SlideSessionResults";
 import type { AnalysisResultState } from "@/lib/analysis/types";
+import type { FieldId } from "@/lib/analysis/fields";
 import type { Dispatch, SetStateAction } from "react";
 
 interface SlideContentProps {
@@ -17,6 +18,7 @@ interface SlideContentProps {
   goalDone: boolean;
   showGoalNotice: boolean;
   onContinueAfterGoal: () => void;
+  allowedFieldIds?: readonly FieldId[];
 }
 
 export default function SlideContent({
@@ -32,6 +34,7 @@ export default function SlideContent({
   goalDone,
   showGoalNotice,
   onContinueAfterGoal,
+  allowedFieldIds,
 }: SlideContentProps) {
   const { user } = useAuth();
 
@@ -56,6 +59,7 @@ export default function SlideContent({
       showMissing={showMissing}
       submitError={submitError}
       navigation={navigation}
+      allowedFieldIds={allowedFieldIds}
     />
   );
 }

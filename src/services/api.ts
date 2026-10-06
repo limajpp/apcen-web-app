@@ -1,5 +1,6 @@
 import axios, { isAxiosError, type AxiosInstance } from "axios";
 import type { CreateResultPayload } from "@/lib/analysis/types";
+import type { FieldId } from "@/lib/analysis/fields";
 
 const RAW_API_URL = import.meta.env.VITE_API_URL;
 
@@ -25,6 +26,7 @@ export type SlideQueueImage = {
   id: string;
   blade: string;
   hasConflict: boolean;
+  conflictingFields: FieldId[];
   createdAt: string;
 };
 
@@ -58,7 +60,7 @@ export async function fetchSlideQueue(
 export async function createSlideRecord(
   isAdmin: boolean,
   imageId: string,
-  result: CreateResultPayload,
+  result: Partial<CreateResultPayload>,
 ): Promise<string | null> {
   try {
     const { data } = await api.post<{ id: string }>(
@@ -75,7 +77,7 @@ export async function createSlideRecord(
 export async function updateSlideRecord(
   isAdmin: boolean,
   recordId: string,
-  result: CreateResultPayload,
+  result: Partial<CreateResultPayload>,
 ): Promise<void> {
   await api.patch(`${isAdmin ? "/verdict" : "/analysis"}/${recordId}`, {
     result,

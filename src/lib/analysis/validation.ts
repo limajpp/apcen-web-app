@@ -4,9 +4,9 @@ import {
   isFieldVisible,
   visibleFields,
   type FieldDescriptor,
-  type FieldId,
 } from "./fields";
 import type { AnalysisResultState, CreateResultPayload } from "./types";
+import type { FieldId } from "./fields";
 
 export function isFieldAnswered(
   state: AnalysisResultState,
@@ -29,42 +29,82 @@ export function isFieldSatisfied(
   );
 }
 
-export function answeredCount(state: AnalysisResultState): number {
-  return visibleFields(state).filter((field) => isFieldAnswered(state, field))
-    .length;
+export function answeredCount(
+  state: AnalysisResultState,
+  allowedFieldIds?: readonly FieldId[],
+): number {
+  return visibleFields(state, allowedFieldIds).filter((field) =>
+    isFieldAnswered(state, field),
+  ).length;
 }
 
-export function isComplete(state: AnalysisResultState): boolean {
-  return analysisFields.every((field) => isFieldSatisfied(state, field));
+export function isComplete(
+  state: AnalysisResultState,
+  allowedFieldIds?: readonly FieldId[],
+): boolean {
+  return analysisFields.every(
+    (field) =>
+      (allowedFieldIds && !allowedFieldIds.includes(field.id)) ||
+      isFieldSatisfied(state, field),
+  );
 }
 
 export function getFirstIncompleteFieldId(
   state: AnalysisResultState,
+  allowedFieldIds?: readonly FieldId[],
 ): FieldId | null {
   return (
-    analysisFields.find((field) => !isFieldSatisfied(state, field))?.id ?? null
+    analysisFields.find(
+      (field) =>
+        (!allowedFieldIds || allowedFieldIds.includes(field.id)) &&
+        !isFieldSatisfied(state, field),
+    )?.id ?? null
   );
 }
 
 export function toCreateResultPayload(
   state: AnalysisResultState,
-): CreateResultPayload {
-  if (!isComplete(state)) {
-    throw new Error("Cannot build an analysis payload from an incomplete form.");
+  allowedFieldIds?: readonly FieldId[],
+): Partial<CreateResultPayload> {
+  if (
+    !analysisFields.every(
+      (field) =>
+        (allowedFieldIds && !allowedFieldIds.includes(field.id)) ||
+        isFieldSatisfied(state, field),
+    )
+  ) {
+    throw new Error(
+      "Cannot build an analysis payload from an incomplete form.",
+    );
   }
 
-  return {
-    patchAdequacy: state.patchAdequacy!,
-    ganglionCells: state.ganglionCells!,
-    ganglionCellsAmount: state.ganglionCellsAmount!,
-    plexus: state.plexus!,
-    artifactSeverity: hasTechnicalArtifact(state)
+  const payload: Partial<CreateResultPayload> = {};
+  const isIncluded = (field: FieldId) =>
+    !allowedFieldIds || allowedFieldIds.includes(field);
+
+  if (isIncluded("patchAdequacy"))
+    payload.patchAdequacy = state.patchAdequacy!;
+  if (isIncluded("ganglionCells"))
+    payload.ganglionCells = state.ganglionCells!;
+  if (isIncluded("ganglionCellsAmount"))
+    payload.ganglionCellsAmount = state.ganglionCellsAmount!;
+  if (isIncluded("plexus")) payload.plexus = state.plexus!;
+  if (isIncluded("artifactSeverity")) {
+    payload.artifactSeverity = hasTechnicalArtifact(state)
       ? state.artifactSeverity!
-      : "no_interference",
-    presentStructures: state.presentStructures ?? [],
-    inflammatoryAlterations: state.inflammatoryAlterations ?? [],
-    otherAlterations: state.otherAlterations ?? [],
-    technicalArtifacts: state.technicalArtifacts ?? [],
-    nerveBundleCharacteristics: state.nerveBundleCharacteristics ?? [],
-  };
+      : "no_interference";
+  }
+  if (isIncluded("presentStructures"))
+    payload.presentStructures = state.presentStructures ?? [];
+  if (isIncluded("inflammatoryAlterations"))
+    payload.inflammatoryAlterations = state.inflammatoryAlterations ?? [];
+  if (isIncluded("otherAlterations"))
+    payload.otherAlterations = state.otherAlterations ?? [];
+  if (isIncluded("technicalArtifacts"))
+    payload.technicalArtifacts = state.technicalArtifacts ?? [];
+  if (isIncluded("nerveBundleCharacteristics"))
+    payload.nerveBundleCharacteristics =
+      state.nerveBundleCharacteristics ?? [];
+
+  return payload;
 }

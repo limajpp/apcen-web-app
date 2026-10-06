@@ -29,7 +29,8 @@ export type Structure =
   | "muscularis_mucosae"
   | "submucosa"
   | "muscularis_propria"
-  | "serous";
+  | "serous"
+  | "not_evaluable";
 
 export type InflammatoryAlteration =
   | "acute_inflammation"
@@ -55,6 +56,8 @@ export type OtherAlteration =
   | "microorganism"
   | "neoplasm"
   | "dysplasia"
+  | "ostomy"
+  | "no_alteration"
   | "other";
 
 export type TechnicalArtifact =
