@@ -9,6 +9,7 @@ export type FieldDescriptor = {
   options: readonly string[];
   exclusiveValues?: readonly string[];
   visibleWhen?: (state: AnalysisResultState) => boolean;
+  dependsOn?: FieldId;
 };
 
 export const hasTechnicalArtifact = (state: AnalysisResultState) =>
@@ -142,13 +143,30 @@ export const analysisFields: readonly FieldDescriptor[] = [
     required: true,
     options: ["no_interference", "interference"],
     visibleWhen: hasTechnicalArtifact,
+    dependsOn: "technicalArtifacts",
   },
 ];
 
 export const isFieldVisible = (
   state: AnalysisResultState,
   field: FieldDescriptor,
-) => field.visibleWhen?.(state) ?? true;
+  allowedFieldIds?: readonly FieldId[],
+) => {
+  if (
+    allowedFieldIds &&
+    field.dependsOn &&
+    !allowedFieldIds.includes(field.dependsOn)
+  ) {
+    return true;
+  }
+
+  return field.visibleWhen?.(state) ?? true;
+};
+
+export const isFieldAllowed = (
+  field: FieldDescriptor,
+  allowedFieldIds?: readonly FieldId[],
+) => !allowedFieldIds || allowedFieldIds.includes(field.id);
 
 export const visibleFields = (
   state: AnalysisResultState,
@@ -156,8 +174,20 @@ export const visibleFields = (
 ) =>
   analysisFields.filter(
     (field) =>
-      (!allowedFieldIds || allowedFieldIds.includes(field.id)) &&
-      isFieldVisible(state, field),
+      isFieldAllowed(field, allowedFieldIds) &&
+      isFieldVisible(state, field, allowedFieldIds),
   );
+
+export const withDependentFields = (
+  conflictingFields: readonly FieldId[],
+): FieldId[] =>
+  analysisFields
+    .filter(
+      (field) =>
+        conflictingFields.includes(field.id) ||
+        (field.dependsOn !== undefined &&
+          conflictingFields.includes(field.dependsOn)),
+    )
+    .map((field) => field.id);
 
 export const fieldSectionId = (id: FieldId) => `analysis-field-${id}`;

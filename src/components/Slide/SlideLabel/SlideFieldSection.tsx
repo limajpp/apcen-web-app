@@ -18,7 +18,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 interface SlideFieldSectionProps {
   field: FieldDescriptor;
-  index: number;
+  number: number;
   state: AnalysisResultState;
   setState: Dispatch<SetStateAction<AnalysisResultState>>;
   showMissing: boolean;
@@ -26,7 +26,7 @@ interface SlideFieldSectionProps {
 
 export default function SlideFieldSection({
   field,
-  index,
+  number,
   state,
   setState,
   showMissing,
@@ -47,7 +47,7 @@ export default function SlideFieldSection({
           missing ? "text-[#C95555]" : "text-[#2A59A9]"
         }`}
       >
-        {`${index + 1}. ${fieldTitles[field.id]}${missing ? "*" : ""}`}
+        {`${number}. ${fieldTitles[field.id]}${missing ? "*" : ""}`}
       </h4>
       {field.kind === "single" ? (
         <RadioGroup

@@ -18,7 +18,7 @@ import useAuth from "@/hooks/useAuth";
 import { initialAnalysisResult } from "@/lib/analysis/types";
 import { uiCopy } from "@/lib/analysis/labels";
 import type { AnalysisResultState } from "@/lib/analysis/types";
-import { fieldSectionId } from "@/lib/analysis/fields";
+import { fieldSectionId, withDependentFields } from "@/lib/analysis/fields";
 import {
   getFirstIncompleteFieldId,
   isComplete,
@@ -92,9 +92,11 @@ export default function SlideLayout() {
         ? goal
         : Math.min(goal, reachableCount);
   const showGoalNotice = goalNotice && !isFinished;
-  const conflictFields = isAdmin
-    ? imagesQueue[currentIndex]?.conflictingFields
-    : undefined;
+  const currentConflicts = imagesQueue[currentIndex]?.conflictingFields;
+  const conflictFields =
+    isAdmin && currentConflicts
+      ? withDependentFields(currentConflicts)
+      : undefined;
   const formComplete = isComplete(labelFields, conflictFields);
   const canGoBack =
     editing === null &&
@@ -400,9 +402,7 @@ export default function SlideLayout() {
       showMissing={showMissing}
       submitError={submitError}
       navigation={navigation}
-      allowedFieldIds={
-        conflictFields
-      }
+      allowedFieldIds={conflictFields}
       goalDone={goalNotice}
       showGoalNotice={showGoalNotice}
       onContinueAfterGoal={handleContinueAfterGoal}

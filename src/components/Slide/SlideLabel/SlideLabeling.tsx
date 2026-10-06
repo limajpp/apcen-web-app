@@ -1,5 +1,9 @@
 import SlideFieldSection from "./SlideFieldSection";
-import { visibleFields, type FieldId } from "@/lib/analysis/fields";
+import {
+  analysisFields,
+  visibleFields,
+  type FieldId,
+} from "@/lib/analysis/fields";
 import { uiCopy } from "@/lib/analysis/labels";
 import { answeredCount } from "@/lib/analysis/validation";
 import type { AnalysisResultState } from "@/lib/analysis/types";
@@ -38,11 +42,11 @@ export default function SlideLabeling({
       </div>
       <div className="analysis-scroll h-137.5 w-full overflow-y-auto rounded-[16px] border-4 border-[#9FC1FE]/60 bg-[#F9F3EA] p-4">
         <ol className="flex flex-col gap-8">
-          {fields.map((field, index) => (
+          {fields.map((field) => (
             <SlideFieldSection
               key={field.id}
               field={field}
-              index={index}
+              number={analysisFields.indexOf(field) + 1}
               state={labelFields}
               setState={setLabelFields}
               showMissing={showMissing}
